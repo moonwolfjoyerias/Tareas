@@ -1,5 +1,5 @@
 // Permite instalar la app y abrirla rápido. Las tareas las sincroniza Firebase.
-const CACHE = "tareas-mw-v1";
+const CACHE = "tareas-mw-v2";
 const ARCHIVOS = ["./", "index.html", "isotipo.png", "icon-192.png", "icon-512.png", "manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {

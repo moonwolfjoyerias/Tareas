@@ -12,221 +12,288 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <style>
 :root{
-  --morado:#5E1A8A; --morado-2:#7a3aa8; --lila:#C5ABF6; --lila-2:#EDE4FB;
-  --fondo:#F8F4EF; --tarjeta:#FFFFFF; --texto:#2a1d33; --suave:#7b6f84; --linea:#e7ded6;
-  --oro:#CB924F; --alta:#c2410c; --media:#b8860b; --baja:#3f8f5a;
+  --morado:#5E1A8A; --morado-2:#7a3aa8; --lila:#C5ABF6; --lila-claro:#F1EAFC; --lila-hover:#E7DCFA;
+  --fondo:#FAF7F3; --panel:#FFFFFF; --lateral:#F3EEE8; --texto:#2b2030; --suave:#786d80; --linea:#ECE5DE;
+  --oro:#CB924F; --alta:#C2410C; --media:#C28A0E; --baja:#3F8F5A;
+  --sombra:0 1px 2px rgba(43,32,48,.06),0 1px 3px rgba(43,32,48,.06);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%}
-body{background:var(--fondo);color:var(--texto);font-family:Poppins,system-ui,sans-serif;font-size:15px;
-  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+body{background:var(--fondo);color:var(--texto);font-family:Poppins,"Segoe UI",system-ui,sans-serif;font-size:14px;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
 input,textarea,select{font:inherit;color:inherit}
-.app{max-width:560px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:0 16px}
-header{display:flex;align-items:center;justify-content:space-between;padding:16px 0 8px}
-.marca{display:flex;align-items:center;gap:8px;font-family:Cinzel,serif;font-weight:700;color:var(--morado);letter-spacing:.04em;font-size:17px}
-.marca img{width:28px;height:28px}
-.icono-btn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--suave)}
-.icono-btn:active{background:var(--lila-2)}
 .oculto{display:none!important}
-main{flex:1;display:flex;flex-direction:column}
+svg{flex:none}
 
-/* --- Inicio / micrófono --- */
-.inicio{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:12px 0 24px;text-align:center}
-.saludo{font-family:Cinzel,serif;color:var(--morado);font-size:22px;margin:0}
-.ayuda{color:var(--suave);margin:0;max-width:300px;font-size:14px}
-.mic{position:relative;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--morado-2),var(--morado) 70%);
-  box-shadow:0 18px 40px -12px rgba(94,26,138,.55);display:grid;place-items:center;transition:transform .15s}
-.mic:active{transform:scale(.96)}
-.mic img{width:118px;height:118px;filter:brightness(0) invert(1)}
-.mic .badge{position:absolute;right:14px;bottom:14px;width:46px;height:46px;border-radius:50%;background:var(--oro);display:grid;place-items:center;
-  box-shadow:0 4px 10px rgba(0,0,0,.2);border:3px solid var(--fondo)}
-.mic.escuchando::before,.mic.escuchando::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid var(--lila);animation:onda 1.6s ease-out infinite}
-.mic.escuchando::after{animation-delay:.8s}
-@keyframes onda{from{transform:scale(1);opacity:.9}to{transform:scale(1.45);opacity:0}}
-.mic.pensando{animation:latido 1s ease-in-out infinite}
-@keyframes latido{50%{transform:scale(.94);opacity:.85}}
-.estado{min-height:22px;color:var(--morado);font-weight:500;font-size:14px}
-.dictado{width:100%;min-height:96px;border:1.5px solid var(--linea);background:var(--tarjeta);border-radius:14px;padding:12px 14px;resize:vertical;outline:none;text-align:left}
-.dictado:focus{border-color:var(--lila)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:999px;font-weight:500}
+/* ===== Estructura ===== */
+.app{display:grid;grid-template-columns:260px 1fr;height:100dvh}
+.app.con-detalle{grid-template-columns:260px 1fr 380px}
+
+/* Lateral */
+.lateral{background:var(--lateral);display:flex;flex-direction:column;padding:calc(14px + env(safe-area-inset-top)) 10px 14px;border-right:1px solid var(--linea);overflow-y:auto}
+.perfil{display:flex;align-items:center;gap:10px;padding:6px 10px 16px}
+.perfil img{width:36px;height:36px}
+.perfil b{font-family:Cinzel,serif;color:var(--morado);font-size:16px;letter-spacing:.03em;display:block}
+.perfil small{color:var(--suave);font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:170px}
+.lista-menu{display:flex;flex-direction:column;gap:2px}
+.item-menu{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;text-align:left;color:var(--texto)}
+.item-menu:hover{background:rgba(94,26,138,.06)}
+.item-menu.activo{background:var(--panel);box-shadow:var(--sombra);font-weight:500}
+.item-menu svg{color:var(--morado)}
+.item-menu span{flex:1}
+.item-menu em{font-style:normal;font-size:12px;color:var(--suave);min-width:18px;text-align:right}
+.lateral .sep{height:1px;background:var(--linea);margin:10px 8px}
+.lateral .abajo{margin-top:auto}
+
+/* Centro */
+.centro{display:flex;flex-direction:column;min-width:0;height:100dvh}
+.cabecera{padding:calc(18px + env(safe-area-inset-top)) 28px 10px;display:flex;align-items:flex-start;gap:12px}
+.cabecera .btn-menu{display:none;margin-top:4px}
+.cabecera h1{font-family:Cinzel,serif;color:var(--morado);font-size:26px;margin:0;line-height:1.2;display:flex;align-items:center;gap:10px}
+.cabecera p{margin:2px 0 0;color:var(--suave);font-size:13px}
+.cabecera .t{flex:1;min-width:0}
+.cuerpo{flex:1;overflow-y:auto;padding:6px 28px 20px}
+.cuerpo::-webkit-scrollbar{width:8px}.cuerpo::-webkit-scrollbar-thumb{background:#ddd2c8;border-radius:8px}
+
+/* Filas de tarea (estilo To Do) */
+.lista{display:flex;flex-direction:column;gap:4px;min-height:8px}
+.fila{display:flex;align-items:center;gap:12px;background:var(--panel);border-radius:8px;box-shadow:var(--sombra);padding:12px 14px;cursor:pointer;user-select:none}
+.fila:hover{background:#FDFBFF}
+.fila.sel{background:var(--lila-claro)}
+.circulo{width:20px;height:20px;border-radius:50%;border:2px solid var(--c,var(--suave));display:grid;place-items:center;flex:none;transition:background .15s}
+.circulo svg{opacity:0;transition:opacity .15s}
+.circulo:hover svg{opacity:.55}
+.circulo:hover{background:color-mix(in srgb,var(--c,var(--morado)) 12%,transparent)}
+.fila.hecha .circulo,.paso.hecho .circulo{background:var(--morado);border-color:var(--morado)}
+.fila.hecha .circulo svg,.paso.hecho .circulo svg{opacity:1}
+.circulo svg path{stroke:var(--c,var(--morado))}
+.fila.hecha .circulo svg path,.paso.hecho .circulo svg path{stroke:#fff}
+.p-alta{--c:var(--alta)}.p-media{--c:var(--media)}.p-baja{--c:var(--baja)}
+.fila .txt{flex:1;min-width:0}
+.fila .titulo{line-height:1.35;word-wrap:break-word}
+.fila.hecha .titulo{text-decoration:line-through;color:var(--suave)}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:12px;color:var(--suave);margin-top:2px}
+.meta span{display:inline-flex;align-items:center;gap:4px}
+.meta .vencida{color:var(--alta)}
+.meta .hoy{color:var(--morado);font-weight:500}
+.bandera{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:var(--c)}
+.bandera:hover{background:var(--lila-claro)}
+.sortable-ghost{opacity:.35}
+.sortable-chosen{box-shadow:0 8px 20px rgba(94,26,138,.25)}
+
+.seccion{display:flex;align-items:center;gap:8px;margin:18px 2px 8px;font-weight:600;font-size:13px;color:var(--texto)}
+.seccion:first-child{margin-top:4px}
+.seccion .punto{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.seccion em{font-style:normal;font-weight:400;color:var(--suave)}
+.seccion.plegable{cursor:pointer}
+.seccion.plegable svg{transition:transform .2s;color:var(--suave)}
+.seccion.plegado svg{transform:rotate(-90deg)}
+.vacio-seccion{border:1.5px dashed var(--linea);border-radius:8px;padding:12px;text-align:center;color:var(--suave);font-size:12px}
+.lista:not(:empty)+.vacio-seccion{display:none}
+
+.sugerencia{background:linear-gradient(135deg,var(--morado),var(--morado-2));color:#fff;border-radius:12px;padding:16px 18px;margin:4px 0 16px;display:flex;gap:14px;align-items:center;cursor:pointer}
+.sugerencia img{width:40px;height:40px;filter:brightness(0) invert(1);opacity:.9}
+.sugerencia small{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--lila)}
+.sugerencia b{display:block;font-size:16px;font-weight:600;margin-top:2px;line-height:1.3}
+.sugerencia span{font-size:12px;opacity:.85}
+.vacio{text-align:center;color:var(--suave);padding:50px 20px}
+.vacio img{width:70px;opacity:.25;margin-bottom:8px}
+
+/* Barra para agregar */
+.agregar{padding:10px 28px calc(16px + env(safe-area-inset-bottom))}
+.caja-agregar{display:flex;align-items:center;gap:10px;background:var(--panel);border-radius:8px;box-shadow:var(--sombra);padding:6px 6px 6px 14px;border:1.5px solid transparent}
+.caja-agregar:focus-within{border-color:var(--lila)}
+.caja-agregar>svg{color:var(--morado)}
+.caja-agregar input{flex:1;border:0;outline:none;background:transparent;padding:9px 0;min-width:0}
+.caja-agregar input::placeholder{color:var(--morado)}
+.mic{width:40px;height:40px;border-radius:50%;background:var(--morado);display:grid;place-items:center;position:relative;flex:none}
+.mic img{width:26px;height:26px;filter:brightness(0) invert(1)}
+.mic.escuchando::before,.mic.escuchando::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--lila);animation:onda 1.5s ease-out infinite}
+.mic.escuchando::after{animation-delay:.75s}
+@keyframes onda{to{transform:scale(1.7);opacity:0}}
+.mic.pensando{animation:latido .9s ease-in-out infinite}
+@keyframes latido{50%{opacity:.55}}
+.estado-voz{font-size:12px;color:var(--morado);padding:6px 4px 0;min-height:0}
+.dictado-vivo{margin-top:8px;background:var(--panel);border-radius:8px;box-shadow:var(--sombra);padding:10px 12px}
+.dictado-vivo textarea{width:100%;border:0;outline:none;resize:none;min-height:60px;background:transparent}
+.dictado-vivo .acc{display:flex;gap:8px;justify-content:flex-end}
+
+/* Detalle */
+.detalle{background:var(--lateral);border-left:1px solid var(--linea);display:flex;flex-direction:column;height:100dvh;min-width:0}
+.det-top{display:flex;justify-content:space-between;align-items:center;padding:calc(10px + env(safe-area-inset-top)) 12px 4px}
+.det-cuerpo{flex:1;overflow-y:auto;padding:6px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.tarjeta{background:var(--panel);border-radius:8px;box-shadow:var(--sombra)}
+.det-titulo{display:flex;align-items:flex-start;gap:12px;padding:14px}
+.det-titulo .circulo{margin-top:6px;width:22px;height:22px}
+.det-titulo textarea{flex:1;border:0;outline:none;resize:none;font-size:18px;font-weight:600;line-height:1.35;background:transparent;padding:2px 0;overflow:hidden}
+.det-titulo.hecha textarea{text-decoration:line-through;color:var(--suave)}
+.paso{display:flex;align-items:center;gap:10px;padding:6px 14px}
+.paso .circulo{width:17px;height:17px;border-width:1.8px}
+.paso input{flex:1;border:0;outline:none;background:transparent;padding:6px 0;min-width:0}
+.paso.hecho input{text-decoration:line-through;color:var(--suave)}
+.paso .quitar{opacity:0;color:var(--suave);width:26px;height:26px;border-radius:6px;display:grid;place-items:center}
+.paso:hover .quitar,.paso input:focus~.quitar{opacity:1}
+.nuevo-paso{display:flex;align-items:center;gap:10px;padding:8px 14px 12px;color:var(--morado)}
+.nuevo-paso input{flex:1;border:0;outline:none;background:transparent;padding:4px 0}
+.nuevo-paso input::placeholder{color:var(--morado)}
+.opcion{display:flex;align-items:center;gap:12px;padding:12px 14px;color:var(--suave)}
+.opcion+.opcion{border-top:1px solid var(--linea)}
+.opcion>svg{color:var(--morado)}
+.opcion label{flex:1;color:var(--texto)}
+.opcion input[type=datetime-local]{border:0;background:transparent;outline:none;color:var(--texto);flex:1;min-width:0}
+.opcion .limpiar{width:26px;height:26px;border-radius:6px;display:grid;place-items:center}
+.prios{display:flex;gap:6px;flex:1}
+.prios button{flex:1;padding:7px 4px;border-radius:7px;border:1.5px solid var(--linea);font-size:13px;font-weight:500;color:var(--texto)}
+.prios button.sel{color:#fff;border-color:var(--c);background:var(--c)}
+.notas{width:100%;border:0;outline:none;resize:vertical;min-height:110px;padding:14px;background:transparent;border-radius:8px}
+.original{font-size:12px;color:var(--suave);padding:10px 14px;white-space:pre-wrap}
+.original b{display:block;font-weight:500;margin-bottom:2px}
+.det-pie{display:flex;justify-content:space-between;align-items:center;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--linea);color:var(--suave);font-size:12px}
+.icono{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:var(--suave)}
+.icono:hover{background:rgba(94,26,138,.08);color:var(--morado)}
+.icono.peligro:hover{color:var(--alta);background:#fdece5}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 16px;border-radius:8px;font-weight:500}
 .btn-primario{background:var(--morado);color:#fff}
 .btn-primario:disabled{opacity:.45}
-.btn-suave{background:var(--lila-2);color:var(--morado)}
-.btn-linea{border:1.5px solid var(--linea);background:var(--tarjeta)}
-.fila-btns{display:flex;gap:10px;width:100%}
-.fila-btns .btn{flex:1}
-.nav-grande{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;margin-top:6px}
-.nav-grande button{background:var(--tarjeta);border:1.5px solid var(--linea);border-radius:16px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:2px}
-.nav-grande b{font-size:22px;color:var(--morado);font-weight:600}
-.nav-grande span{font-size:13px;color:var(--suave)}
+.btn-suave{background:var(--lila-claro);color:var(--morado)}
 
-/* --- Listas --- */
-.barra{display:flex;align-items:center;gap:8px;padding:4px 0 12px}
-.barra h2{font-family:Cinzel,serif;color:var(--morado);font-size:20px;margin:0;flex:1}
-.pestanas{display:flex;background:var(--lila-2);border-radius:999px;padding:4px;margin-bottom:14px}
-.pestanas button{flex:1;padding:8px;border-radius:999px;color:var(--morado);font-weight:500;font-size:14px}
-.pestanas button.activa{background:var(--tarjeta);box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.haz-ahora{background:linear-gradient(135deg,var(--morado),var(--morado-2));color:#fff;border-radius:18px;padding:16px;margin-bottom:16px}
-.haz-ahora small{text-transform:uppercase;letter-spacing:.12em;font-size:11px;opacity:.85;color:var(--lila)}
-.haz-ahora .t{font-size:18px;font-weight:600;margin:4px 0 6px;line-height:1.3}
-.haz-ahora .meta{font-size:13px;opacity:.9}
-.haz-ahora .acciones{display:flex;gap:8px;margin-top:12px}
-.haz-ahora .acciones button{background:rgba(255,255,255,.18);color:#fff;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:500}
-.grupo{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--suave);margin:14px 4px 6px}
-.lista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-.tarea{background:var(--tarjeta);border:1px solid var(--linea);border-radius:14px;display:flex;align-items:flex-start;gap:10px;padding:12px;border-left:4px solid var(--c,var(--linea))}
-.tarea.alta{--c:var(--alta)} .tarea.media{--c:var(--media)} .tarea.baja{--c:var(--baja)}
-.check{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--c,var(--suave));display:grid;place-items:center;margin-top:1px}
-.check svg{opacity:0}
-.tarea.hecha .check{background:var(--morado);border-color:var(--morado)}
-.tarea.hecha .check svg{opacity:1}
-.tarea .cuerpo{flex:1;min-width:0;text-align:left}
-.tarea .titulo{font-weight:500;line-height:1.35}
-.tarea.hecha .titulo{text-decoration:line-through;color:var(--suave)}
-.tarea .info{display:flex;flex-wrap:wrap;gap:6px 10px;font-size:12px;color:var(--suave);margin-top:4px}
-.chip{padding:1px 8px;border-radius:999px;background:var(--lila-2);color:var(--morado)}
-.chip.vencida{background:#fde7df;color:var(--alta)}
-.vacio{text-align:center;color:var(--suave);padding:40px 10px}
+/* Pantallas completas: carga, login, clave */
+.pantalla{position:fixed;inset:0;background:var(--fondo);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;z-index:30}
+.pantalla img{width:96px}
+.pantalla h1{font-family:Cinzel,serif;color:var(--morado);margin:0;font-size:26px}
+.pantalla p{color:var(--suave);margin:0;max-width:340px}
+.modal-fondo{position:fixed;inset:0;background:rgba(43,32,48,.35);display:grid;place-items:center;z-index:40;padding:16px}
+.modal{background:var(--panel);border-radius:12px;padding:20px;width:100%;max-width:420px;box-shadow:0 20px 50px rgba(0,0,0,.2)}
+.modal h3{margin:0 0 6px;font-family:Cinzel,serif;color:var(--morado)}
+.modal p{margin:0 0 12px;color:var(--suave);font-size:13px}
+.modal input{width:100%;padding:10px 12px;border:1.5px solid var(--linea);border-radius:8px;outline:none}
+.modal input:focus{border-color:var(--lila)}
+.modal .acc{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translate(-50%,30px);opacity:0;background:var(--texto);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;transition:.25s;z-index:50;pointer-events:none;max-width:90vw;text-align:center}
+.toast.ver{transform:translate(-50%,0);opacity:1}
+.velo{display:none}
 
-/* --- Detalle --- */
-.detalle label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--suave);margin:14px 0 6px}
-.campo{width:100%;border:1.5px solid var(--linea);background:var(--tarjeta);border-radius:12px;padding:10px 12px;outline:none}
-.campo:focus{border-color:var(--lila)}
-textarea.campo{min-height:80px;resize:vertical}
-.prioridades{display:flex;gap:8px}
-.prioridades button{flex:1;padding:9px;border-radius:12px;border:1.5px solid var(--linea);background:var(--tarjeta);font-weight:500;font-size:14px}
-.prioridades button.sel[data-p=alta]{background:var(--alta);border-color:var(--alta);color:#fff}
-.prioridades button.sel[data-p=media]{background:var(--media);border-color:var(--media);color:#fff}
-.prioridades button.sel[data-p=baja]{background:var(--baja);border-color:var(--baja);color:#fff}
-.paso{display:flex;align-items:center;gap:8px;padding:6px 0}
-.paso input[type=checkbox]{width:20px;height:20px;accent-color:var(--morado);flex:none}
-.paso input[type=text]{flex:1;border:0;border-bottom:1px solid var(--linea);background:transparent;padding:6px 2px;outline:none}
-.paso.ok input[type=text]{text-decoration:line-through;color:var(--suave)}
-.paso button{color:var(--suave);padding:4px 8px}
-.original{font-size:13px;color:var(--suave);background:var(--lila-2);border-radius:12px;padding:10px 12px;white-space:pre-wrap}
-.pie-detalle{display:flex;gap:10px;margin:22px 0 30px}
-.pie-detalle .btn{flex:1}
-.borrar{color:var(--alta)}
-
-/* --- Login / ajustes --- */
-.centro{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:30px 0}
-.centro img{width:110px}
-.centro h1{font-family:Cinzel,serif;color:var(--morado);margin:0;font-size:26px}
-.tarjeta{background:var(--tarjeta);border:1px solid var(--linea);border-radius:16px;padding:16px;text-align:left;width:100%}
-.tarjeta p{margin:0 0 10px;font-size:14px;color:var(--suave)}
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(120px);background:var(--texto);color:#fff;
-  padding:12px 18px;border-radius:12px;font-size:14px;transition:transform .25s;z-index:9;max-width:90%;text-align:center}
-.toast.ver{transform:translateX(-50%) translateY(0)}
-.nueva-res{width:100%;text-align:left}
-
-/* Ventana compacta (escritorio) */
-@media (max-width:420px){.mic{width:170px;height:170px}.mic img{width:104px;height:104px}}
+/* ===== Celular / ventana angosta ===== */
+@media (max-width:899px){
+  .app,.app.con-detalle{grid-template-columns:1fr}
+  .lateral{position:fixed;inset:0 auto 0 0;width:280px;z-index:20;transform:translateX(-100%);transition:transform .25s}
+  .lateral.abierto{box-shadow:4px 0 20px rgba(0,0,0,.12)}
+  .lateral.abierto{transform:none}
+  .velo{position:fixed;inset:0;background:rgba(43,32,48,.3);z-index:15}
+  .velo.ver{display:block}
+  .cabecera{padding-left:16px;padding-right:16px}
+  .cabecera .btn-menu{display:grid}
+  .cuerpo{padding:6px 12px 16px}
+  .agregar{padding:8px 12px calc(12px + env(safe-area-inset-bottom))}
+  .detalle{position:fixed;inset:0;z-index:25;border-left:0}
+  .paso .quitar{opacity:1}
+}
+@media (max-width:400px){.cabecera h1{font-size:22px}}
 </style>
 </head>
 <body>
-<div class="app">
-  <header>
-    <button class="marca" id="irInicio" aria-label="Inicio"><img src="isotipo.png" alt="">Tareas MW</button>
-    <div>
-      <button class="icono-btn oculto" id="btnAjustes" aria-label="Ajustes">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
-      </button>
+
+<!-- Carga / Login -->
+<div class="pantalla" id="pCarga"><img src="isotipo.png" alt=""><p>Cargando…</p></div>
+<div class="pantalla oculto" id="pLogin">
+  <img src="isotipo.png" alt="">
+  <h1>Tareas MW</h1>
+  <p>Tu lista de pendientes, ordenada por prioridad. Escríbelas o díctalas al lobo.</p>
+  <button class="btn btn-primario" id="btnLogin">Entrar con Google</button>
+</div>
+
+<div class="app oculto" id="app">
+  <!-- Lateral -->
+  <nav class="lateral" id="lateral">
+    <div class="perfil"><img src="isotipo.png" alt=""><div><b>Tareas MW</b><small id="correo"></small></div></div>
+    <div class="lista-menu">
+      <button class="item-menu" data-vista="ahora"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Haz ahora</span><em id="cAhora"></em></button>
+      <button class="item-menu" data-vista="prioridad"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg><span>Por prioridad</span><em id="cPrio"></em></button>
+      <button class="item-menu" data-vista="planeado"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Planeado</span><em id="cPlan"></em></button>
+      <button class="item-menu" data-vista="completadas"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg><span>Completadas</span><em id="cHechas"></em></button>
     </div>
-  </header>
+    <div class="abajo">
+      <div class="sep"></div>
+      <button class="item-menu" id="btnClave"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2L20 3M16 7l3 3"/></svg><span>Clave de Gemini (voz)</span></button>
+      <button class="item-menu" id="btnSalir"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg><span>Cerrar sesión</span></button>
+    </div>
+  </nav>
+  <div class="velo" id="velo"></div>
 
-  <main>
-    <!-- Cargando -->
-    <section id="vCargando" class="centro"><img src="isotipo.png" alt=""><p class="ayuda">Cargando…</p></section>
+  <!-- Centro -->
+  <section class="centro">
+    <div class="cabecera">
+      <button class="icono btn-menu" id="btnMenu" aria-label="Menú"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <div class="t"><h1 id="titulo">Por prioridad</h1><p id="subtitulo"></p></div>
+    </div>
+    <div class="cuerpo" id="cuerpo"></div>
+    <div class="agregar" id="zonaAgregar">
+      <div class="caja-agregar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        <input id="inNueva" placeholder="Agregar una tarea" enterkeyhint="done" autocomplete="off">
+        <button class="mic" id="mic" title="Dictar tarea con IA" aria-label="Dictar tarea con IA"><img src="isotipo.png" alt=""></button>
+      </div>
+      <div class="dictado-vivo oculto" id="dictadoVivo">
+        <textarea id="dictado" placeholder="Te escucho…"></textarea>
+        <div class="acc"><button class="btn" id="btnCancelarDict">Cancelar</button><button class="btn btn-primario" id="btnCrearIA">Crear con IA</button></div>
+      </div>
+      <div class="estado-voz" id="estadoVoz"></div>
+    </div>
+  </section>
 
-    <!-- Login -->
-    <section id="vLogin" class="centro oculto">
-      <img src="isotipo.png" alt="">
-      <h1>Tareas MW</h1>
-      <p class="ayuda">Dicta tus pendientes y la IA los organiza por ti.</p>
-      <button class="btn btn-primario" id="btnLogin">Entrar con Google</button>
-    </section>
-
-    <!-- Clave de Gemini -->
-    <section id="vClave" class="centro oculto">
-      <img src="isotipo.png" alt="">
-      <h1>Un último paso</h1>
+  <!-- Detalle -->
+  <aside class="detalle oculto" id="detalle">
+    <div class="det-top">
+      <button class="icono" id="btnCerrarDet" aria-label="Cerrar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+    </div>
+    <div class="det-cuerpo">
       <div class="tarjeta">
-        <p>Pega tu clave gratuita de Gemini. Solo se pide una vez y queda guardada en tu cuenta privada; funciona en la compu y en el celular.</p>
-        <input class="campo" id="inClave" type="password" placeholder="Pega aquí tu clave" autocomplete="off">
-        <div style="margin-top:12px;display:flex;gap:8px">
-          <button class="btn btn-primario" id="btnGuardarClave" style="flex:1">Guardar</button>
-          <button class="btn btn-linea oculto" id="btnCancelarClave">Cancelar</button>
+        <div class="det-titulo" id="dTituloBox">
+          <button class="circulo" id="dCheck" aria-label="Completar"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg></button>
+          <textarea id="dTitulo" rows="1"></textarea>
+        </div>
+        <div id="dPasos"></div>
+        <div class="nuevo-paso">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          <input id="inPaso" placeholder="Agregar paso" enterkeyhint="done">
         </div>
       </div>
-      <button class="btn btn-linea oculto" id="btnSalir">Cerrar sesión</button>
-    </section>
+      <div class="tarjeta">
+        <div class="opcion">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>
+          <div class="prios" id="dPrios">
+            <button data-p="alta" class="p-alta">Alta</button><button data-p="media" class="p-media">Media</button><button data-p="baja" class="p-baja">Baja</button>
+          </div>
+        </div>
+        <div class="opcion">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+          <input type="datetime-local" id="dFecha" aria-label="Fecha de vencimiento">
+          <button class="limpiar icono" id="dQuitarFecha" aria-label="Quitar fecha"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+        </div>
+      </div>
+      <div class="tarjeta"><textarea class="notas" id="dNotas" placeholder="Agregar descripción o notas"></textarea></div>
+      <div class="tarjeta original oculto" id="dOriginal"></div>
+    </div>
+    <div class="det-pie">
+      <span id="dCreada"></span>
+      <button class="icono peligro" id="btnBorrar" aria-label="Eliminar tarea"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+    </div>
+  </aside>
+</div>
 
-    <!-- Inicio: micrófono -->
-    <section id="vInicio" class="inicio oculto">
-      <p class="saludo" id="saludo">Hola</p>
-      <p class="ayuda" id="ayudaMic">Toca el lobo y dime todo lo que sepas del pendiente.</p>
-      <button class="mic" id="mic" aria-label="Dictar tarea">
-        <img src="isotipo.png" alt="">
-        <span class="badge"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
-      </button>
-      <div class="estado" id="estado"></div>
-      <textarea class="dictado" id="dictado" placeholder="También puedes escribir aquí (o usar el micrófono del teclado)"></textarea>
-      <div class="fila-btns">
-        <button class="btn btn-linea" id="btnLimpiar">Borrar</button>
-        <button class="btn btn-primario" id="btnCrear" disabled>Crear tarea</button>
-      </div>
-      <div class="nueva-res" id="nuevaRes"></div>
-      <div class="nav-grande">
-        <button id="irPend"><b id="nPend">0</b><span>📋 Me faltan</span></button>
-        <button id="irHechas"><b id="nHechas">0</b><span>✅ Hechas</span></button>
-      </div>
-    </section>
-
-    <!-- Listas -->
-    <section id="vLista" class="oculto">
-      <div class="barra">
-        <h2 id="tituloLista">Mis tareas</h2>
-        <button class="btn btn-suave" id="btnNueva" style="padding:8px 14px">🎙️ Nueva</button>
-      </div>
-      <div class="pestanas">
-        <button data-tab="pend" class="activa">Me faltan</button>
-        <button data-tab="hechas">Hechas</button>
-      </div>
-      <div id="hazAhora"></div>
-      <div id="contLista"></div>
-    </section>
-
-    <!-- Detalle -->
-    <section id="vDetalle" class="detalle oculto">
-      <div class="barra">
-        <button class="icono-btn" id="btnVolver" aria-label="Volver"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
-        <h2>Tarea</h2>
-      </div>
-      <label>Título</label>
-      <input class="campo" id="dTitulo">
-      <label>Descripción</label>
-      <textarea class="campo" id="dDesc"></textarea>
-      <label>Prioridad</label>
-      <div class="prioridades" id="dPrio">
-        <button data-p="alta">Alta</button><button data-p="media">Media</button><button data-p="baja">Baja</button>
-      </div>
-      <label>Fecha límite</label>
-      <input class="campo" id="dFecha" type="datetime-local">
-      <label>Pasos</label>
-      <div id="dPasos"></div>
-      <button class="btn btn-suave" id="btnAddPaso" style="margin-top:6px;padding:8px 14px">+ Agregar paso</button>
-      <label>Lo que dictaste</label>
-      <div class="original" id="dOriginal"></div>
-      <div class="pie-detalle">
-        <button class="btn btn-linea borrar" id="btnBorrar">Eliminar</button>
-        <button class="btn btn-primario" id="btnHecha">Marcar hecha</button>
-      </div>
-    </section>
-  </main>
+<!-- Modal clave -->
+<div class="modal-fondo oculto" id="mClave">
+  <div class="modal">
+    <h3>Clave de Gemini</h3>
+    <p>Solo se usa para crear tareas por voz. Pega tu clave gratuita de Google AI Studio; queda guardada en tu cuenta privada y funciona en todos tus aparatos.</p>
+    <input id="inClave" type="password" placeholder="Pega aquí tu clave" autocomplete="off">
+    <div class="acc"><button class="btn" id="btnCancelarClave">Cancelar</button><button class="btn btn-primario" id="btnGuardarClave">Guardar</button></div>
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -250,326 +317,368 @@ import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager
   updateDoc, deleteDoc, onSnapshot, getDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+const fb = initializeApp(firebaseConfig);
+const auth = getAuth(fb);
+const db = initializeFirestore(fb, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
 
 const $ = (id) => document.getElementById(id);
-const vistas = ["vCargando", "vLogin", "vClave", "vInicio", "vLista", "vDetalle"];
-let usuario = null, claveGemini = null, tareas = [], tab = "pend", abierta = null, quitarEscucha = null;
-
-function mostrar(v) {
-  vistas.forEach((x) => $(x).classList.toggle("oculto", x !== v));
-  $("btnAjustes").classList.toggle("oculto", !["vInicio", "vLista"].includes(v));
-  window.scrollTo(0, 0);
-}
-function toast(msg, ms = 2600) {
-  const t = $("toast"); t.textContent = msg; t.classList.add("ver");
-  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("ver"), ms);
-}
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const PRIOS = ["alta", "media", "baja"];
+const NOMBRE_P = { alta: "Alta", media: "Media", baja: "Baja" };
+let usuario = null, clave = null, tareas = [], abierta = null, quitar = null;
+let vista = (() => { try { return localStorage.getItem("mw_vista") || "prioridad"; } catch { return "prioridad"; } })();
+let completadasPlegadas = true;
+const sortables = [];
+
+function toast(m, ms = 2600) { const t = $("toast"); t.textContent = m; t.classList.add("ver"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("ver"), ms); }
+const ref = (id) => doc(db, "users", usuario.uid, "tareas", id);
+const guardar = (id, datos) => updateDoc(ref(id), datos).catch((e) => toast("No se guardó: " + e.code));
 
 // ---------- Sesión ----------
 $("btnLogin").onclick = async () => {
-  const prov = new GoogleAuthProvider();
-  prov.setCustomParameters({ login_hint: "mwjoyerias@gmail.com", prompt: "select_account" });
-  try { await signInWithPopup(auth, prov); }
+  const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
+  try { await signInWithPopup(auth, p); }
   catch (e) {
-    if (["auth/popup-blocked", "auth/operation-not-supported-in-this-environment"].includes(e.code)) signInWithRedirect(auth, prov);
-    else if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") toast("No se pudo entrar: " + e.code);
+    if (["auth/popup-blocked", "auth/operation-not-supported-in-this-environment"].includes(e.code)) signInWithRedirect(auth, p);
+    else if (!["auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(e.code)) toast("No se pudo entrar: " + e.code);
   }
 };
-$("btnSalir").onclick = () => signOut(auth);
+$("btnSalir").onclick = () => { if (confirm("¿Cerrar sesión?")) signOut(auth); };
 
 onAuthStateChanged(auth, async (u) => {
-  usuario = u;
-  if (quitarEscucha) { quitarEscucha(); quitarEscucha = null; }
-  if (!u) { mostrar("vLogin"); return; }
-  const nombre = (u.displayName || "").split(" ")[0];
-  const h = new Date().getHours();
-  $("saludo").textContent = (h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches") + (nombre ? ", " + nombre : "");
-  try {
-    const perfil = await getDoc(doc(db, "users", u.uid));
-    claveGemini = perfil.exists() ? perfil.data().geminiKey : null;
-  } catch { claveGemini = null; }
-  quitarEscucha = onSnapshot(collection(db, "users", u.uid, "tareas"), (snap) => {
-    tareas = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    pintarTodo();
-  }, (err) => toast("Error al leer tareas: " + err.code));
-  if (!claveGemini) { pedirClave(false); return; }
-  route();
+  usuario = u; $("pCarga").classList.add("oculto");
+  if (quitar) { quitar(); quitar = null; }
+  if (!u) { $("app").classList.add("oculto"); $("pLogin").classList.remove("oculto"); return; }
+  $("pLogin").classList.add("oculto"); $("app").classList.remove("oculto");
+  $("correo").textContent = u.email || "";
+  getDoc(doc(db, "users", u.uid)).then((d) => { clave = d.exists() ? d.data().geminiKey || null : null; }).catch(() => {});
+  quitar = onSnapshot(collection(db, "users", u.uid, "tareas"), (s) => {
+    tareas = s.docs.map((d) => ({ id: d.id, ...d.data() }));
+    pintar(); if (abierta) pintarDetalle(false);
+  }, (e) => toast("Error al leer: " + e.code));
+  ruta();
 });
 
-function pedirClave(cancelable) {
-  $("inClave").value = "";
-  $("btnCancelarClave").classList.toggle("oculto", !cancelable);
-  $("btnSalir").classList.toggle("oculto", !cancelable);
-  mostrar("vClave");
-}
-$("btnGuardarClave").onclick = async () => {
-  const k = $("inClave").value.trim().replace(/^"|"$/g, "");
-  if (k.length < 20) { toast("Esa clave se ve incompleta"); return; }
-  await setDoc(doc(db, "users", usuario.uid), { geminiKey: k }, { merge: true });
-  claveGemini = k; toast("Clave guardada"); location.hash = ""; route();
-};
-$("btnCancelarClave").onclick = () => route();
-$("btnAjustes").onclick = () => pedirClave(true);
-
-// ---------- Navegación ----------
-function route() {
-  if (!usuario) return;
-  if (!claveGemini) return pedirClave(false);
-  const h = location.hash.slice(1);
-  if (h === "pendientes" || h === "hechas") { tab = h === "hechas" ? "hechas" : "pend"; pintarLista(); mostrar("vLista"); }
-  else if (h.startsWith("t/")) { abrirDetalle(h.slice(2)); }
-  else { mostrar("vInicio"); }
-}
-window.addEventListener("hashchange", route);
-$("irInicio").onclick = () => { location.hash = ""; };
-$("irPend").onclick = () => { location.hash = "pendientes"; };
-$("irHechas").onclick = () => { location.hash = "hechas"; };
-$("btnNueva").onclick = () => { location.hash = ""; };
-$("btnVolver").onclick = () => { history.length > 1 ? history.back() : (location.hash = "pendientes"); };
-document.querySelectorAll(".pestanas button").forEach((b) => b.onclick = () => {
-  location.hash = b.dataset.tab === "hechas" ? "hechas" : "pendientes";
-});
-
-// ---------- Orden y fechas ----------
-const PESO = { alta: 3, media: 2, baja: 1 };
-const hoyStr = () => fechaLocal(new Date()).slice(0, 10);
-function fechaLocal(d) { const z = (n) => String(n).padStart(2, "0"); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`; }
-function estadoFecha(f) {
+// ---------- Fechas y orden ----------
+const z = (n) => String(n).padStart(2, "0");
+const local = (d) => `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`;
+const hoy = () => local(new Date()).slice(0, 10);
+const aDate = (f) => new Date(f.length === 10 ? f + "T23:59" : f);
+function estado(f) {
   if (!f) return null;
-  const ahora = new Date(), d = new Date(f.length === 10 ? f + "T23:59" : f);
-  const dia = f.slice(0, 10), hoy = hoyStr();
-  const man = fechaLocal(new Date(Date.now() + 864e5)).slice(0, 10);
-  if (d < ahora) return "vencida";
-  if (dia === hoy) return "hoy";
+  const d = aDate(f), dia = f.slice(0, 10), man = local(new Date(Date.now() + 864e5)).slice(0, 10);
+  if (d < new Date()) return "vencida";
+  if (dia === hoy()) return "hoy";
   if (dia === man) return "manana";
   return "despues";
 }
 function textoFecha(f) {
   if (!f) return "";
-  const d = new Date(f.length === 10 ? f + "T00:00" : f), e = estadoFecha(f);
-  const hora = f.length > 10 ? d.toLocaleTimeString("es-MX", { hour: "numeric", minute: "2-digit" }) : "";
-  let dia = e === "hoy" ? "Hoy" : e === "manana" ? "Mañana" : d.toLocaleDateString("es-MX", { weekday: "short", day: "numeric", month: "short" });
-  if (e === "vencida") dia = "Venció " + (f.slice(0, 10) === hoyStr() ? "hoy" : d.toLocaleDateString("es-MX", { day: "numeric", month: "short" }));
-  return dia + (hora ? " · " + hora : "");
+  const d = new Date(f.length === 10 ? f + "T00:00" : f), e = estado(f);
+  const hora = f.length > 10 ? " " + d.toLocaleTimeString("es-MX", { hour: "numeric", minute: "2-digit" }) : "";
+  if (e === "hoy") return "Hoy" + hora;
+  if (e === "manana") return "Mañana" + hora;
+  const dia = d.toLocaleDateString("es-MX", { weekday: "short", day: "numeric", month: "short" });
+  return (e === "vencida" ? "Venció " : "") + dia + hora;
 }
-function puntaje(t) {
-  const e = estadoFecha(t.fecha);
-  const urg = { vencida: 0, hoy: 1, manana: 2, despues: 3 }[e] ?? 4;
-  return [urg <= 1 ? 0 : 1, -(PESO[t.prioridad] || 2), urg, t.fecha || "9999"];
+const peso = { alta: 0, media: 1, baja: 2 };
+const porOrden = (a, b) => (a.orden ?? 0) - (b.orden ?? 0);
+function urgencia(t) {
+  const e = estado(t.fecha);
+  return [{ vencida: 0, hoy: 0 }[e] ?? 1, peso[t.prioridad] ?? 1, { vencida: 0, hoy: 1, manana: 2, despues: 3 }[e] ?? 4, t.fecha || "9", t.orden ?? 0];
 }
-function comparar(a, b) {
-  const x = puntaje(a), y = puntaje(b);
-  for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] < y[i] ? -1 : 1;
-  return 0;
-}
+function porUrgencia(a, b) { const x = urgencia(a), y = urgencia(b); for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] < y[i] ? -1 : 1; return 0; }
+const pendientes = () => tareas.filter((t) => !t.hecha);
+const deAhora = () => pendientes().filter((t) => ["vencida", "hoy"].includes(estado(t.fecha)) || t.prioridad === "alta").sort(porUrgencia);
 
-// ---------- Pintar ----------
-function pintarTodo() {
-  const pend = tareas.filter((t) => !t.hecha), hechas = tareas.filter((t) => t.hecha);
-  $("nPend").textContent = pend.length; $("nHechas").textContent = hechas.length;
-  if (!$("vLista").classList.contains("oculto")) pintarLista();
-  if (!$("vDetalle").classList.contains("oculto") && abierta) {
-    const t = tareas.find((x) => x.id === abierta);
-    if (!t) { location.hash = "pendientes"; }
-  }
+// ---------- Pintar lista ----------
+const CHECK = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg>';
+const BANDERA = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6"><path d="M5 21V4h11l-2 4 2 4H5" /></svg>';
+function fila(t) {
+  const p = PRIOS.includes(t.prioridad) ? t.prioridad : "media", pasos = t.pasos || [], ok = pasos.filter((x) => x.hecho).length, e = estado(t.fecha);
+  const meta = [];
+  if (pasos.length) meta.push(`<span>${ok} de ${pasos.length}</span>`);
+  if (t.fecha) meta.push(`<span class="${t.hecha ? "" : e === "vencida" ? "vencida" : e === "hoy" ? "hoy" : ""}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg>${esc(textoFecha(t.fecha))}</span>`);
+  if (t.descripcion) meta.push(`<span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Nota</span>`);
+  return `<div class="fila p-${p} ${t.hecha ? "hecha" : ""} ${t.id === abierta ? "sel" : ""}" data-id="${t.id}">
+    <button class="circulo" data-check="${t.id}" aria-label="Completar">${CHECK}</button>
+    <div class="txt"><div class="titulo">${esc(t.titulo)}</div>${meta.length ? `<div class="meta">${meta.join("")}</div>` : ""}</div>
+    <button class="bandera" data-ciclo="${t.id}" title="Prioridad ${NOMBRE_P[p]} (toca para cambiar)">${BANDERA}</button></div>`;
 }
-const ICONO_OK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg>';
-function filaTarea(t) {
-  const e = estadoFecha(t.fecha), pasos = t.pasos || [], ok = pasos.filter((p) => p.hecho).length;
-  return `<li class="tarea ${esc(t.prioridad || "media")} ${t.hecha ? "hecha" : ""}">
-    <button class="check" data-check="${t.id}" aria-label="Marcar">${ICONO_OK}</button>
-    <button class="cuerpo" data-abrir="${t.id}">
-      <div class="titulo">${esc(t.titulo)}</div>
-      <div class="info">
-        ${t.fecha ? `<span class="chip ${e === "vencida" && !t.hecha ? "vencida" : ""}">${esc(textoFecha(t.fecha))}</span>` : ""}
-        ${pasos.length ? `<span>☑ ${ok}/${pasos.length} pasos</span>` : ""}
-        <span>${{ alta: "🔴 Alta", media: "🟡 Media", baja: "🟢 Baja" }[t.prioridad] || ""}</span>
-      </div>
-    </button></li>`;
-}
-function pintarLista() {
-  document.querySelectorAll(".pestanas button").forEach((b) => b.classList.toggle("activa", b.dataset.tab === tab));
-  const cont = $("contLista"), haz = $("hazAhora");
-  if (tab === "hechas") {
-    $("tituloLista").textContent = "Hechas";
-    haz.innerHTML = "";
-    const l = tareas.filter((t) => t.hecha).sort((a, b) => (b.hechaEn?.seconds || 0) - (a.hechaEn?.seconds || 0));
-    cont.innerHTML = l.length ? `<ul class="lista">${l.map(filaTarea).join("")}</ul>` : `<div class="vacio">Aún no has terminado tareas.</div>`;
+const VISTAS = {
+  ahora: ["Haz ahora", () => new Date().toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long" })],
+  prioridad: ["Por prioridad", () => "Arrastra para acomodar tus tareas"],
+  planeado: ["Planeado", () => "Tareas con fecha"],
+  completadas: ["Completadas", () => ""]
+};
+function pintar() {
+  sortables.splice(0).forEach((s) => s.destroy());
+  document.querySelectorAll(".item-menu[data-vista]").forEach((b) => b.classList.toggle("activo", b.dataset.vista === vista));
+  const pend = pendientes();
+  $("cAhora").textContent = deAhora().length || "";
+  $("cPrio").textContent = pend.length || "";
+  $("cPlan").textContent = pend.filter((t) => t.fecha).length || "";
+  $("cHechas").textContent = tareas.length - pend.length || "";
+  $("titulo").textContent = VISTAS[vista][0];
+  const sub = VISTAS[vista][1](); $("subtitulo").textContent = sub ? sub[0].toUpperCase() + sub.slice(1) : "";
+  $("zonaAgregar").classList.toggle("oculto", vista === "completadas");
+  const c = $("cuerpo");
+
+  if (vista === "prioridad") {
+    let html = "";
+    for (const p of PRIOS) {
+      const l = pend.filter((t) => (PRIOS.includes(t.prioridad) ? t.prioridad : "media") === p).sort(porOrden);
+      html += `<div class="seccion p-${p}"><span class="punto"></span>${NOMBRE_P[p]} <em>${l.length || ""}</em></div>
+        <div class="lista" data-prio="${p}">${l.map(fila).join("")}</div><div class="vacio-seccion">Arrastra aquí tareas de prioridad ${NOMBRE_P[p].toLowerCase()}</div>`;
+    }
+    const hechas = tareas.filter((t) => t.hecha).sort((a, b) => (b.hechaEn?.seconds || 0) - (a.hechaEn?.seconds || 0));
+    if (hechas.length) html += `<div class="seccion plegable ${completadasPlegadas ? "plegado" : ""}" id="plegar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg>Completadas <em>${hechas.length}</em></div>
+      <div class="lista ${completadasPlegadas ? "oculto" : ""}">${hechas.slice(0, 30).map(fila).join("")}</div>`;
+    c.innerHTML = html;
+    $("plegar")?.addEventListener("click", () => { completadasPlegadas = !completadasPlegadas; pintar(); });
+    if (window.Sortable) c.querySelectorAll(".lista[data-prio]").forEach((el) => sortables.push(new Sortable(el, {
+      group: "prio", animation: 160, delay: 220, delayOnTouchOnly: true, filter: ".circulo,.bandera", preventOnFilter: false,
+      ghostClass: "sortable-ghost", chosenClass: "sortable-chosen", onEnd: alSoltar
+    })));
     return;
   }
-  $("tituloLista").textContent = "Me faltan";
-  const l = tareas.filter((t) => !t.hecha).sort(comparar);
-  if (!l.length) { haz.innerHTML = ""; cont.innerHTML = `<div class="vacio">🎉 No tienes pendientes.<br>Toca “Nueva” para dictar una tarea.</div>`; return; }
-  const p = l[0];
-  haz.innerHTML = `<div class="haz-ahora"><small>Haz ahora</small>
-    <div class="t">${esc(p.titulo)}</div>
-    <div class="meta">${[textoFecha(p.fecha), { alta: "Prioridad alta", media: "Prioridad media", baja: "Prioridad baja" }[p.prioridad]].filter(Boolean).map(esc).join(" · ")}</div>
-    <div class="acciones"><button data-check="${p.id}">✓ Ya la hice</button><button data-abrir="${p.id}">Ver detalles</button></div></div>`;
-  const resto = l.slice(1);
-  const grupos = [["Urgente", resto.filter((t) => ["vencida", "hoy"].includes(estadoFecha(t.fecha)))],
-    ["Alta prioridad", resto.filter((t) => !["vencida", "hoy"].includes(estadoFecha(t.fecha)) && t.prioridad === "alta")],
-    ["Después", resto.filter((t) => !["vencida", "hoy"].includes(estadoFecha(t.fecha)) && t.prioridad !== "alta")]];
-  cont.innerHTML = grupos.filter((g) => g[1].length).map((g) => `<div class="grupo">${g[0]}</div><ul class="lista">${g[1].map(filaTarea).join("")}</ul>`).join("");
-}
-document.addEventListener("click", (ev) => {
-  const c = ev.target.closest("[data-check]"); if (c) { alternarHecha(c.dataset.check); return; }
-  const a = ev.target.closest("[data-abrir]"); if (a) { location.hash = "t/" + a.dataset.abrir; }
-});
-async function alternarHecha(id) {
-  const t = tareas.find((x) => x.id === id); if (!t) return;
-  const nueva = !t.hecha;
-  await updateDoc(doc(db, "users", usuario.uid, "tareas", id), { hecha: nueva, hechaEn: nueva ? serverTimestamp() : null });
-  if (nueva) toast("✓ ¡Bien! Tarea terminada");
+  if (vista === "ahora") {
+    const l = deAhora();
+    if (!l.length) {
+      const otra = pend.sort(porUrgencia)[0];
+      c.innerHTML = otra ? `<div class="vacio"><img src="isotipo.png" alt=""><br>Nada urgente por ahora.</div><div class="seccion">Podrías avanzar con</div><div class="lista">${fila(otra)}</div>`
+        : `<div class="vacio"><img src="isotipo.png" alt=""><br>🎉 No tienes pendientes.</div>`;
+      return;
+    }
+    const p = l[0];
+    c.innerHTML = `<div class="sugerencia" data-abrir="${p.id}"><img src="isotipo.png" alt=""><div><small>Empieza por aquí</small><b>${esc(p.titulo)}</b><span>${esc([textoFecha(p.fecha), "Prioridad " + NOMBRE_P[p.prioridad || "media"].toLowerCase()].filter(Boolean).join(" · "))}</span></div></div>
+      <div class="lista">${l.map(fila).join("")}</div>`;
+    return;
+  }
+  if (vista === "planeado") {
+    const l = pend.filter((t) => t.fecha).sort((a, b) => aDate(a.fecha) - aDate(b.fecha));
+    const g = [["Vencidas", "vencida"], ["Hoy", "hoy"], ["Mañana", "manana"], ["Más adelante", "despues"]];
+    const html = g.map(([n, k]) => { const x = l.filter((t) => estado(t.fecha) === k); return x.length ? `<div class="seccion">${n} <em>${x.length}</em></div><div class="lista">${x.map(fila).join("")}</div>` : ""; }).join("");
+    c.innerHTML = html || `<div class="vacio"><img src="isotipo.png" alt=""><br>No tienes tareas con fecha.</div>`;
+    return;
+  }
+  const l = tareas.filter((t) => t.hecha).sort((a, b) => (b.hechaEn?.seconds || 0) - (a.hechaEn?.seconds || 0));
+  c.innerHTML = l.length ? `<div class="lista">${l.map(fila).join("")}</div>` : `<div class="vacio"><img src="isotipo.png" alt=""><br>Aún no completas tareas.</div>`;
 }
 
-// ---------- Dictado por voz ----------
+// Arrastrar: nuevo orden y, si cambió de sección, nueva prioridad
+function alSoltar(ev) {
+  const id = ev.item.dataset.id, prio = ev.to.dataset.prio;
+  const ids = [...ev.to.children].map((n) => n.dataset.id);
+  const i = ids.indexOf(id);
+  const ordenDe = (x) => tareas.find((t) => t.id === x)?.orden ?? 0;
+  const antes = i > 0 ? ordenDe(ids[i - 1]) : null, despues = i < ids.length - 1 ? ordenDe(ids[i + 1]) : null;
+  const orden = antes === null && despues === null ? Date.now() : antes === null ? despues - 1000 : despues === null ? antes + 1000 : (antes + despues) / 2;
+  const t = tareas.find((x) => x.id === id); if (t) { t.orden = orden; t.prioridad = prio; }
+  guardar(id, { orden, prioridad: prio });
+}
+
+// Clics en la lista
+$("cuerpo").addEventListener("click", (e) => {
+  const ch = e.target.closest("[data-check]"); if (ch) { e.stopPropagation(); completar(ch.dataset.check); return; }
+  const ci = e.target.closest("[data-ciclo]"); if (ci) { e.stopPropagation(); cicloPrio(ci.dataset.ciclo); return; }
+  const f = e.target.closest("[data-id],[data-abrir]"); if (f) abrir(f.dataset.id || f.dataset.abrir);
+});
+async function completar(id) {
+  const t = tareas.find((x) => x.id === id); if (!t) return;
+  const v = !t.hecha;
+  await guardar(id, { hecha: v, hechaEn: v ? serverTimestamp() : null });
+  if (v) toast("✓ Tarea completada");
+}
+function cicloPrio(id) {
+  const t = tareas.find((x) => x.id === id); if (!t) return;
+  const sig = { alta: "media", media: "baja", baja: "alta" }[t.prioridad || "media"];
+  guardar(id, { prioridad: sig }); toast("Prioridad: " + NOMBRE_P[sig]);
+}
+
+// ---------- Navegación ----------
+document.querySelectorAll(".item-menu[data-vista]").forEach((b) => b.onclick = () => {
+  vista = b.dataset.vista; try { localStorage.setItem("mw_vista", vista); } catch {}
+  cerrarMenu(); pintar();
+});
+$("btnMenu").onclick = () => { $("lateral").classList.add("abierto"); $("velo").classList.add("ver"); };
+$("velo").onclick = cerrarMenu;
+function cerrarMenu() { $("lateral").classList.remove("abierto"); $("velo").classList.remove("ver"); }
+function abrir(id) { if (location.hash !== "#t/" + id) location.hash = "t/" + id; else ruta(); }
+function cerrarDetalle() { if (location.hash.startsWith("#t/")) history.length > 1 ? history.back() : (location.hash = ""); }
+function ruta() {
+  if (!usuario) return;
+  const h = location.hash.slice(1);
+  if (h.startsWith("t/") && tareas.length === 0) { setTimeout(ruta, 300); return; }
+  abierta = h.startsWith("t/") ? h.slice(2) : null;
+  if (abierta && !tareas.find((t) => t.id === abierta)) abierta = null;
+  $("detalle").classList.toggle("oculto", !abierta);
+  $("app").classList.toggle("con-detalle", !!abierta);
+  if (abierta) pintarDetalle(true);
+  pintar();
+}
+window.addEventListener("hashchange", ruta);
+$("btnCerrarDet").onclick = cerrarDetalle;
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && abierta && !document.activeElement.matches("input,textarea")) cerrarDetalle(); });
+
+// ---------- Crear a mano ----------
+$("inNueva").addEventListener("keydown", async (e) => {
+  if (e.key !== "Enter") return;
+  const titulo = e.target.value.trim(); if (!titulo) return;
+  e.target.value = "";
+  const prio = vista === "ahora" ? "alta" : "media";
+  const r = await addDoc(collection(db, "users", usuario.uid, "tareas"), {
+    titulo, descripcion: "", pasos: [], fecha: vista === "ahora" ? hoy() : null, prioridad: prio, hecha: false, orden: -Date.now(), creada: serverTimestamp()
+  });
+  toast("Tarea agregada · tócala para agregar detalles");
+  if (window.matchMedia("(min-width:900px)").matches) abrir(r.id);
+});
+
+// ---------- Detalle ----------
+function autoAlto(el) { el.style.height = "auto"; el.style.height = el.scrollHeight + "px"; }
+function pintarDetalle(todo) {
+  const t = tareas.find((x) => x.id === abierta); if (!t) { cerrarDetalle(); return; }
+  const p = PRIOS.includes(t.prioridad) ? t.prioridad : "media";
+  const activo = document.activeElement;
+  $("dTituloBox").className = "det-titulo p-" + p + (t.hecha ? " hecha" : "");
+  $("dCheck").parentElement.classList.toggle("hecha", !!t.hecha);
+  $("dCheck").style.cssText = t.hecha ? "background:var(--morado);border-color:var(--morado)" : "";
+  $("dCheck").querySelector("svg").style.opacity = t.hecha ? 1 : "";
+  $("dCheck").querySelector("path").style.stroke = t.hecha ? "#fff" : "";
+  if (todo || activo !== $("dTitulo")) { $("dTitulo").value = t.titulo || ""; autoAlto($("dTitulo")); }
+  if (todo || activo !== $("dNotas")) $("dNotas").value = t.descripcion || "";
+  if (todo || activo !== $("dFecha")) $("dFecha").value = t.fecha ? (t.fecha.length === 10 ? t.fecha + "T09:00" : t.fecha) : "";
+  $("dQuitarFecha").classList.toggle("oculto", !t.fecha);
+  document.querySelectorAll("#dPrios button").forEach((b) => b.classList.toggle("sel", b.dataset.p === p));
+  if (todo || !$("dPasos").contains(activo)) pintarPasos(t.pasos || []);
+  $("dOriginal").classList.toggle("oculto", !t.original);
+  $("dOriginal").innerHTML = t.original ? `<b>Lo que dictaste</b>${esc(t.original)}` : "";
+  const c = t.creada?.toDate ? t.creada.toDate() : null;
+  $("dCreada").textContent = c ? "Creada el " + c.toLocaleDateString("es-MX", { weekday: "short", day: "numeric", month: "short" }) : "";
+}
+function pintarPasos(pasos) {
+  $("dPasos").innerHTML = pasos.map((s, i) => `<div class="paso ${s.hecho ? "hecho" : ""}">
+    <button class="circulo" data-pc="${i}" aria-label="Completar paso">${CHECK}</button>
+    <input value="${esc(s.texto)}" data-pt="${i}">
+    <button class="quitar" data-px="${i}" aria-label="Quitar paso"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>`).join("");
+}
+const pasosDe = () => (tareas.find((x) => x.id === abierta)?.pasos || []).map((s) => ({ ...s }));
+$("dCheck").onclick = () => completar(abierta);
+$("dTitulo").addEventListener("input", (e) => autoAlto(e.target));
+$("dTitulo").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); e.target.blur(); } });
+$("dTitulo").addEventListener("change", (e) => guardar(abierta, { titulo: e.target.value.trim() || "Sin título" }));
+$("dNotas").addEventListener("change", (e) => guardar(abierta, { descripcion: e.target.value }));
+$("dFecha").addEventListener("change", (e) => guardar(abierta, { fecha: e.target.value || null }));
+$("dQuitarFecha").onclick = () => guardar(abierta, { fecha: null });
+document.querySelectorAll("#dPrios button").forEach((b) => b.onclick = () => guardar(abierta, { prioridad: b.dataset.p }));
+$("inPaso").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+  const v = e.target.value.trim(); if (!v) return;
+  const p = pasosDe(); p.push({ texto: v, hecho: false }); e.target.value = "";
+  pintarPasos(p); guardar(abierta, { pasos: p });
+});
+$("dPasos").addEventListener("click", (e) => {
+  const c = e.target.closest("[data-pc]"), x = e.target.closest("[data-px]"); if (!c && !x) return;
+  const p = pasosDe();
+  if (c) p[+c.dataset.pc].hecho = !p[+c.dataset.pc].hecho; else p.splice(+x.dataset.px, 1);
+  pintarPasos(p); guardar(abierta, { pasos: p });
+});
+$("dPasos").addEventListener("change", (e) => {
+  if (!e.target.dataset.pt) return;
+  const p = pasosDe(), i = +e.target.dataset.pt, v = e.target.value.trim();
+  if (v) p[i].texto = v; else p.splice(i, 1);
+  guardar(abierta, { pasos: p });
+});
+$("dPasos").addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.dataset.pt) { e.preventDefault(); $("inPaso").focus(); } });
+$("btnBorrar").onclick = async () => {
+  if (!confirm("¿Eliminar esta tarea? No se puede deshacer.")) return;
+  const id = abierta; cerrarDetalle(); await deleteDoc(ref(id)); toast("Tarea eliminada");
+};
+
+// ---------- Clave de Gemini ----------
+let trasGuardarClave = null;
+function pedirClave(despues) { trasGuardarClave = despues || null; $("inClave").value = ""; $("mClave").classList.remove("oculto"); setTimeout(() => $("inClave").focus(), 50); }
+$("btnClave").onclick = () => { cerrarMenu(); pedirClave(); };
+$("btnCancelarClave").onclick = () => $("mClave").classList.add("oculto");
+$("btnGuardarClave").onclick = async () => {
+  const k = $("inClave").value.trim().replace(/^"|"$/g, "");
+  if (k.length < 20) { toast("Esa clave se ve incompleta"); return; }
+  await setDoc(doc(db, "users", usuario.uid), { geminiKey: k }, { merge: true });
+  clave = k; $("mClave").classList.add("oculto"); toast("Clave guardada");
+  if (trasGuardarClave) { const f = trasGuardarClave; trasGuardarClave = null; f(); }
+};
+
+// ---------- Voz + IA ----------
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let rec = null, escuchando = false, baseTexto = "";
-if (!SR) $("ayudaMic").textContent = "Escribe el pendiente abajo o usa el micrófono de tu teclado.";
+let rec = null, escuchando = false, base = "";
 $("mic").onclick = () => {
-  if (!SR) { $("dictado").focus(); return; }
-  escuchando ? rec.stop() : empezar();
+  if (!clave) { pedirClave(() => $("mic").click()); return; }
+  if (escuchando) { rec.stop(); return; }
+  $("dictadoVivo").classList.remove("oculto");
+  if (!SR) { $("dictado").placeholder = "Escribe o usa el micrófono de tu teclado y toca “Crear con IA”"; $("dictado").focus(); return; }
+  empezar();
 };
 function empezar() {
   rec = new SR(); rec.lang = "es-MX"; rec.continuous = true; rec.interimResults = true;
-  baseTexto = $("dictado").value ? $("dictado").value.trim() + " " : "";
-  rec.onstart = () => { escuchando = true; $("mic").classList.add("escuchando"); $("estado").textContent = "Te escucho… toca otra vez para terminar"; };
-  rec.onresult = (e) => {
-    let fin = "", tmp = "";
-    for (let i = 0; i < e.results.length; i++) (e.results[i].isFinal ? (fin += e.results[i][0].transcript) : (tmp += e.results[i][0].transcript));
-    $("dictado").value = baseTexto + fin + tmp; actualizarBtn();
-  };
-  rec.onerror = (e) => {
-    if (e.error === "not-allowed") toast("Permite el micrófono para dictar");
-    else if (e.error !== "no-speech" && e.error !== "aborted") toast("Micrófono: " + e.error);
-  };
-  rec.onend = () => {
-    escuchando = false; $("mic").classList.remove("escuchando"); $("estado").textContent = "";
-    if ($("dictado").value.trim()) crearTarea();
-  };
+  base = $("dictado").value.trim() ? $("dictado").value.trim() + " " : "";
+  rec.onstart = () => { escuchando = true; $("mic").classList.add("escuchando"); $("estadoVoz").textContent = "Te escucho… toca el lobo para terminar"; };
+  rec.onresult = (e) => { let s = ""; for (let i = 0; i < e.results.length; i++) s += e.results[i][0].transcript; $("dictado").value = base + s; };
+  rec.onerror = (e) => { if (e.error === "not-allowed") toast("Permite el micrófono para dictar"); else if (!["no-speech", "aborted"].includes(e.error)) toast("Micrófono: " + e.error); };
+  rec.onend = () => { escuchando = false; $("mic").classList.remove("escuchando"); $("estadoVoz").textContent = ""; if ($("dictado").value.trim()) crearIA(); };
   rec.start();
 }
-function actualizarBtn() { $("btnCrear").disabled = !$("dictado").value.trim(); }
-$("dictado").oninput = actualizarBtn;
-$("btnLimpiar").onclick = () => { $("dictado").value = ""; $("nuevaRes").innerHTML = ""; actualizarBtn(); };
-$("btnCrear").onclick = () => crearTarea();
+$("btnCancelarDict").onclick = () => { if (escuchando) { rec.onend = null; rec.abort(); escuchando = false; $("mic").classList.remove("escuchando"); } $("dictado").value = ""; $("dictadoVivo").classList.add("oculto"); $("estadoVoz").textContent = ""; };
+$("btnCrearIA").onclick = () => { if (escuchando) rec.stop(); else crearIA(); };
 
-// ---------- Gemini ----------
-async function preguntarGemini(texto) {
-  const ahora = new Date();
-  const prompt = `Eres un asistente que organiza tareas de trabajo. Hoy es ${ahora.toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} y son las ${ahora.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })} (fecha ISO de hoy: ${hoyStr()}).
-A partir de lo que la persona dictó, crea UNA tarea. Responde SOLO con JSON con estas claves:
-- "titulo": corto y claro, empieza con un verbo, máximo 60 caracteres.
-- "descripcion": 1 a 3 frases con el contexto útil que mencionó (personas, cantidades, detalles). Cadena vacía si no hay.
-- "pasos": lista de pasos concretos y en orden si los mencionó o son obvios (máximo 8). Lista vacía si es algo de un solo paso.
-- "fecha": fecha límite en formato "AAAA-MM-DDTHH:MM" si dio hora, "AAAA-MM-DD" si solo dio día, o null si no mencionó fecha. Interpreta "mañana", "el lunes", "en dos días", etc. respecto a hoy.
-- "prioridad": "alta" si es urgente, importante o vence hoy/mañana; "baja" si dijo que no corre prisa; "media" en otro caso.
-Corrige errores de dictado obvios. Escribe en español.
-Lo que dictó: """${texto}"""`;
-  let ultimoError = null;
-  for (const modelo of MODELOS) {
-    for (let intento = 0; intento < 2; intento++) {
-      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": claveGemini },
+async function gemini(texto) {
+  const a = new Date();
+  const prompt = `Organizas tareas de trabajo. Hoy es ${a.toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}, ${a.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })} (ISO: ${hoy()}).
+Con lo que la persona dictó, crea UNA tarea. Responde SOLO JSON con:
+"titulo": corto, empieza con verbo, máx. 60 caracteres;
+"descripcion": 1 a 3 frases con el contexto útil (personas, cantidades, detalles), o "";
+"pasos": lista de pasos concretos en orden (máx. 8), o [] si es de un solo paso;
+"fecha": "AAAA-MM-DDTHH:MM" si dio hora, "AAAA-MM-DD" si solo dio día, o null; interpreta "mañana", "el lunes", etc. respecto a hoy;
+"prioridad": "alta" si es urgente/importante o vence hoy-mañana, "baja" si no corre prisa, si no "media".
+Corrige errores de dictado. Español.
+Dictado: """${texto}"""`;
+  let ult = null;
+  for (const m of MODELOS) {
+    for (let i = 0; i < 2; i++) {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`, {
+        method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": clave },
         body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.3 } })
       });
-      if (r.ok) {
-        const j = await r.json();
-        const txt = j.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") || "";
-        return JSON.parse(txt.replace(/^```json|```$/g, "").trim());
-      }
-      const err = await r.json().catch(() => ({}));
-      ultimoError = { status: r.status, msg: err.error?.message || r.statusText };
-      if (r.status === 400 || r.status === 401 || r.status === 403) throw ultimoError;
-      if (r.status === 404) break;                       // modelo no disponible: probar el siguiente
-      await new Promise((ok) => setTimeout(ok, 1500));    // 429 / 503: esperar y reintentar
+      if (r.ok) { const j = await r.json(); const s = j.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") || ""; return JSON.parse(s.replace(/^```json|```$/g, "").trim()); }
+      const er = await r.json().catch(() => ({})); ult = { status: r.status, msg: er.error?.message || r.statusText };
+      if ([400, 401, 403].includes(r.status)) throw ult;
+      if (r.status === 404) break;
+      await new Promise((ok) => setTimeout(ok, 1500));
     }
   }
-  throw ultimoError || { status: 0, msg: "Sin respuesta" };
+  throw ult || { status: 0, msg: "Sin respuesta" };
 }
-
-async function crearTarea() {
+async function crearIA() {
   const texto = $("dictado").value.trim(); if (!texto) return;
-  $("btnCrear").disabled = true; $("mic").classList.add("pensando"); $("estado").textContent = "Organizando tu tarea…";
+  $("btnCrearIA").disabled = true; $("mic").classList.add("pensando"); $("estadoVoz").textContent = "El lobo está organizando tu tarea…";
   try {
-    const r = await preguntarGemini(texto);
-    const pr = ["alta", "media", "baja"].includes(r.prioridad) ? r.prioridad : "media";
-    const tarea = {
+    const r = await gemini(texto);
+    const t = {
       titulo: String(r.titulo || texto.slice(0, 60)), descripcion: String(r.descripcion || ""),
-      pasos: (Array.isArray(r.pasos) ? r.pasos : []).filter(Boolean).slice(0, 12).map((p) => ({ texto: String(p), hecho: false })),
+      pasos: (Array.isArray(r.pasos) ? r.pasos : []).filter(Boolean).slice(0, 12).map((x) => ({ texto: String(x), hecho: false })),
       fecha: typeof r.fecha === "string" && /^\d{4}-\d{2}-\d{2}/.test(r.fecha) ? r.fecha.slice(0, 16) : null,
-      prioridad: pr, hecha: false, original: texto, creada: serverTimestamp()
+      prioridad: PRIOS.includes(r.prioridad) ? r.prioridad : "media", hecha: false, original: texto, orden: -Date.now(), creada: serverTimestamp()
     };
-    const ref = await addDoc(collection(db, "users", usuario.uid, "tareas"), tarea);
-    $("dictado").value = ""; actualizarBtn();
-    $("nuevaRes").innerHTML = `<div class="grupo">Tarea creada</div><ul class="lista">${filaTarea({ id: ref.id, ...tarea })}</ul>`;
-    toast("✓ Tarea creada");
+    const nr = await addDoc(collection(db, "users", usuario.uid, "tareas"), t);
+    $("dictado").value = ""; $("dictadoVivo").classList.add("oculto");
+    toast("✓ Tarea creada: revisa y ajusta lo que quieras"); abrir(nr.id);
   } catch (e) {
     const s = e.status;
-    const msg = s === 400 || s === 401 || s === 403 ? "La clave de Gemini no funciona. Revísala en ⚙️."
-      : s === 429 ? "Llegaste al límite gratuito del momento. Espera un minuto."
-      : s === 503 ? "Gemini está saturado. Intenta en un momento; tu texto sigue ahí."
-      : "No se pudo crear: " + (e.msg || e.message || e);
-    toast(msg, 4500); actualizarBtn();
-  } finally { $("mic").classList.remove("pensando"); $("estado").textContent = ""; }
+    toast([400, 401, 403].includes(s) ? "La clave de Gemini no funciona. Revísala en el menú." : s === 429 ? "Límite gratuito del momento. Espera un minuto." : s === 503 ? "Gemini está saturado. Intenta en un momento; tu texto sigue ahí." : "No se pudo crear: " + (e.msg || e.message || e), 4500);
+  } finally { $("btnCrearIA").disabled = false; $("mic").classList.remove("pensando"); $("estadoVoz").textContent = ""; }
 }
 
-// ---------- Detalle ----------
-function abrirDetalle(id) {
-  const t = tareas.find((x) => x.id === id);
-  if (!t) { if (tareas.length) location.hash = "pendientes"; else setTimeout(() => route(), 400); return; }
-  abierta = id;
-  $("dTitulo").value = t.titulo || ""; $("dDesc").value = t.descripcion || "";
-  $("dFecha").value = t.fecha ? (t.fecha.length === 10 ? t.fecha + "T09:00" : t.fecha) : "";
-  document.querySelectorAll("#dPrio button").forEach((b) => b.classList.toggle("sel", b.dataset.p === (t.prioridad || "media")));
-  $("dOriginal").textContent = t.original || "—";
-  $("btnHecha").textContent = t.hecha ? "Regresar a pendientes" : "Marcar hecha";
-  pintarPasos(t.pasos || []);
-  mostrar("vDetalle");
-}
-function pintarPasos(pasos) {
-  $("dPasos").innerHTML = pasos.map((p, i) => `<div class="paso ${p.hecho ? "ok" : ""}">
-    <input type="checkbox" data-i="${i}" ${p.hecho ? "checked" : ""}><input type="text" data-i="${i}" value="${esc(p.texto)}">
-    <button data-quitar="${i}" aria-label="Quitar paso">✕</button></div>`).join("") || `<div class="ayuda" style="max-width:none">Sin pasos.</div>`;
-}
-const refAbierta = () => doc(db, "users", usuario.uid, "tareas", abierta);
-const pasosActuales = () => (tareas.find((x) => x.id === abierta)?.pasos || []).map((p) => ({ ...p }));
-$("dTitulo").onchange = () => updateDoc(refAbierta(), { titulo: $("dTitulo").value.trim() || "Sin título" });
-$("dDesc").onchange = () => updateDoc(refAbierta(), { descripcion: $("dDesc").value });
-$("dFecha").onchange = () => updateDoc(refAbierta(), { fecha: $("dFecha").value || null });
-document.querySelectorAll("#dPrio button").forEach((b) => b.onclick = () => {
-  document.querySelectorAll("#dPrio button").forEach((x) => x.classList.toggle("sel", x === b));
-  updateDoc(refAbierta(), { prioridad: b.dataset.p });
-});
-$("dPasos").addEventListener("change", (e) => {
-  const i = +e.target.dataset.i, p = pasosActuales(); if (!p[i]) return;
-  if (e.target.type === "checkbox") { p[i].hecho = e.target.checked; e.target.parentElement.classList.toggle("ok", e.target.checked); }
-  else p[i].texto = e.target.value.trim();
-  updateDoc(refAbierta(), { pasos: p.filter((x) => x.texto) });
-});
-$("dPasos").addEventListener("click", (e) => {
-  const q = e.target.closest("[data-quitar]"); if (!q) return;
-  const p = pasosActuales(); p.splice(+q.dataset.quitar, 1);
-  updateDoc(refAbierta(), { pasos: p }); pintarPasos(p);
-});
-$("btnAddPaso").onclick = () => {
-  const p = pasosActuales(); p.push({ texto: "Nuevo paso", hecho: false });
-  updateDoc(refAbierta(), { pasos: p }); pintarPasos(p);
-  const ins = $("dPasos").querySelectorAll("input[type=text]"); const u = ins[ins.length - 1]; u.focus(); u.select();
-};
-$("btnHecha").onclick = async () => { await alternarHecha(abierta); history.length > 1 ? history.back() : (location.hash = "pendientes"); };
-$("btnBorrar").onclick = async () => {
-  if (!confirm("¿Eliminar esta tarea? No se puede deshacer.")) return;
-  await deleteDoc(refAbierta());
-  location.hash = "pendientes";
-  toast("Tarea eliminada");
-};
-
+// Refrescar textos de fechas ("Hoy", "Venció") cada minuto
+setInterval(() => { if (usuario) pintar(); }, 60000);
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
 </script>
 </body>
