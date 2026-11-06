@@ -307,7 +307,8 @@ const firebaseConfig = {
   messagingSenderId: "52925706316",
   appId: "1:52925706316:web:3fdfebf38d2b7637a404e9"
 };
-const MODELOS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite"];
+// Primero el modelo "lite" (el más rápido); si no está disponible, los demás.
+const MODELOS = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-3.8-flash"];
 // ====================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -643,7 +644,7 @@ Corrige errores de dictado. Español.
 Dictado: """${texto}"""`;
   let ult = null;
   for (const m of MODELOS) {
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 1; i++) {   // un intento por modelo: si está saturado, pasa al siguiente sin esperar
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`, {
         method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": clave },
         body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.3 } })
@@ -651,8 +652,7 @@ Dictado: """${texto}"""`;
       if (r.ok) { const j = await r.json(); const s = j.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") || ""; return JSON.parse(s.replace(/^```json|```$/g, "").trim()); }
       const er = await r.json().catch(() => ({})); ult = { status: r.status, msg: er.error?.message || r.statusText };
       if ([400, 401, 403].includes(r.status)) throw ult;
-      if (r.status === 404) break;
-      await new Promise((ok) => setTimeout(ok, 1500));
+      break;
     }
   }
   throw ult || { status: 0, msg: "Sin respuesta" };
