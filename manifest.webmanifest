@@ -1,0 +1,19 @@
+{
+  "name": "Tareas MW",
+  "short_name": "Tareas MW",
+  "description": "Dicta tus pendientes y la IA los organiza por prioridad.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F8F4EF",
+  "theme_color": "#5E1A8A",
+  "lang": "es-MX",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Nueva tarea", "url": "./", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Me faltan", "url": "./#pendientes", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ]
+}

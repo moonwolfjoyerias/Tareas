@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tareas MW</title>
+<meta name="theme-color" content="#5E1A8A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --morado:#5E1A8A; --morado-2:#7a3aa8; --lila:#C5ABF6; --lila-2:#EDE4FB;
+  --fondo:#F8F4EF; --tarjeta:#FFFFFF; --texto:#2a1d33; --suave:#7b6f84; --linea:#e7ded6;
+  --oro:#CB924F; --alta:#c2410c; --media:#b8860b; --baja:#3f8f5a;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--fondo);color:var(--texto);font-family:Poppins,system-ui,sans-serif;font-size:15px;
+  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,textarea,select{font:inherit;color:inherit}
+.app{max-width:560px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:0 16px}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 0 8px}
+.marca{display:flex;align-items:center;gap:8px;font-family:Cinzel,serif;font-weight:700;color:var(--morado);letter-spacing:.04em;font-size:17px}
+.marca img{width:28px;height:28px}
+.icono-btn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--suave)}
+.icono-btn:active{background:var(--lila-2)}
+.oculto{display:none!important}
+main{flex:1;display:flex;flex-direction:column}
+
+/* --- Inicio / micrófono --- */
+.inicio{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:12px 0 24px;text-align:center}
+.saludo{font-family:Cinzel,serif;color:var(--morado);font-size:22px;margin:0}
+.ayuda{color:var(--suave);margin:0;max-width:300px;font-size:14px}
+.mic{position:relative;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--morado-2),var(--morado) 70%);
+  box-shadow:0 18px 40px -12px rgba(94,26,138,.55);display:grid;place-items:center;transition:transform .15s}
+.mic:active{transform:scale(.96)}
+.mic img{width:118px;height:118px;filter:brightness(0) invert(1)}
+.mic .badge{position:absolute;right:14px;bottom:14px;width:46px;height:46px;border-radius:50%;background:var(--oro);display:grid;place-items:center;
+  box-shadow:0 4px 10px rgba(0,0,0,.2);border:3px solid var(--fondo)}
+.mic.escuchando::before,.mic.escuchando::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid var(--lila);animation:onda 1.6s ease-out infinite}
+.mic.escuchando::after{animation-delay:.8s}
+@keyframes onda{from{transform:scale(1);opacity:.9}to{transform:scale(1.45);opacity:0}}
+.mic.pensando{animation:latido 1s ease-in-out infinite}
+@keyframes latido{50%{transform:scale(.94);opacity:.85}}
+.estado{min-height:22px;color:var(--morado);font-weight:500;font-size:14px}
+.dictado{width:100%;min-height:96px;border:1.5px solid var(--linea);background:var(--tarjeta);border-radius:14px;padding:12px 14px;resize:vertical;outline:none;text-align:left}
+.dictado:focus{border-color:var(--lila)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:999px;font-weight:500}
+.btn-primario{background:var(--morado);color:#fff}
+.btn-primario:disabled{opacity:.45}
+.btn-suave{background:var(--lila-2);color:var(--morado)}
+.btn-linea{border:1.5px solid var(--linea);background:var(--tarjeta)}
+.fila-btns{display:flex;gap:10px;width:100%}
+.fila-btns .btn{flex:1}
+.nav-grande{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;margin-top:6px}
+.nav-grande button{background:var(--tarjeta);border:1.5px solid var(--linea);border-radius:16px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.nav-grande b{font-size:22px;color:var(--morado);font-weight:600}
+.nav-grande span{font-size:13px;color:var(--suave)}
+
+/* --- Listas --- */
+.barra{display:flex;align-items:center;gap:8px;padding:4px 0 12px}
+.barra h2{font-family:Cinzel,serif;color:var(--morado);font-size:20px;margin:0;flex:1}
+.pestanas{display:flex;background:var(--lila-2);border-radius:999px;padding:4px;margin-bottom:14px}
+.pestanas button{flex:1;padding:8px;border-radius:999px;color:var(--morado);font-weight:500;font-size:14px}
+.pestanas button.activa{background:var(--tarjeta);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.haz-ahora{background:linear-gradient(135deg,var(--morado),var(--morado-2));color:#fff;border-radius:18px;padding:16px;margin-bottom:16px}
+.haz-ahora small{text-transform:uppercase;letter-spacing:.12em;font-size:11px;opacity:.85;color:var(--lila)}
+.haz-ahora .t{font-size:18px;font-weight:600;margin:4px 0 6px;line-height:1.3}
+.haz-ahora .meta{font-size:13px;opacity:.9}
+.haz-ahora .acciones{display:flex;gap:8px;margin-top:12px}
+.haz-ahora .acciones button{background:rgba(255,255,255,.18);color:#fff;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:500}
+.grupo{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--suave);margin:14px 4px 6px}
+.lista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.tarea{background:var(--tarjeta);border:1px solid var(--linea);border-radius:14px;display:flex;align-items:flex-start;gap:10px;padding:12px;border-left:4px solid var(--c,var(--linea))}
+.tarea.alta{--c:var(--alta)} .tarea.media{--c:var(--media)} .tarea.baja{--c:var(--baja)}
+.check{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--c,var(--suave));display:grid;place-items:center;margin-top:1px}
+.check svg{opacity:0}
+.tarea.hecha .check{background:var(--morado);border-color:var(--morado)}
+.tarea.hecha .check svg{opacity:1}
+.tarea .cuerpo{flex:1;min-width:0;text-align:left}
+.tarea .titulo{font-weight:500;line-height:1.35}
+.tarea.hecha .titulo{text-decoration:line-through;color:var(--suave)}
+.tarea .info{display:flex;flex-wrap:wrap;gap:6px 10px;font-size:12px;color:var(--suave);margin-top:4px}
+.chip{padding:1px 8px;border-radius:999px;background:var(--lila-2);color:var(--morado)}
+.chip.vencida{background:#fde7df;color:var(--alta)}
+.vacio{text-align:center;color:var(--suave);padding:40px 10px}
+
+/* --- Detalle --- */
+.detalle label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--suave);margin:14px 0 6px}
+.campo{width:100%;border:1.5px solid var(--linea);background:var(--tarjeta);border-radius:12px;padding:10px 12px;outline:none}
+.campo:focus{border-color:var(--lila)}
+textarea.campo{min-height:80px;resize:vertical}
+.prioridades{display:flex;gap:8px}
+.prioridades button{flex:1;padding:9px;border-radius:12px;border:1.5px solid var(--linea);background:var(--tarjeta);font-weight:500;font-size:14px}
+.prioridades button.sel[data-p=alta]{background:var(--alta);border-color:var(--alta);color:#fff}
+.prioridades button.sel[data-p=media]{background:var(--media);border-color:var(--media);color:#fff}
+.prioridades button.sel[data-p=baja]{background:var(--baja);border-color:var(--baja);color:#fff}
+.paso{display:flex;align-items:center;gap:8px;padding:6px 0}
+.paso input[type=checkbox]{width:20px;height:20px;accent-color:var(--morado);flex:none}
+.paso input[type=text]{flex:1;border:0;border-bottom:1px solid var(--linea);background:transparent;padding:6px 2px;outline:none}
+.paso.ok input[type=text]{text-decoration:line-through;color:var(--suave)}
+.paso button{color:var(--suave);padding:4px 8px}
+.original{font-size:13px;color:var(--suave);background:var(--lila-2);border-radius:12px;padding:10px 12px;white-space:pre-wrap}
+.pie-detalle{display:flex;gap:10px;margin:22px 0 30px}
+.pie-detalle .btn{flex:1}
+.borrar{color:var(--alta)}
+
+/* --- Login / ajustes --- */
+.centro{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:30px 0}
+.centro img{width:110px}
+.centro h1{font-family:Cinzel,serif;color:var(--morado);margin:0;font-size:26px}
+.tarjeta{background:var(--tarjeta);border:1px solid var(--linea);border-radius:16px;padding:16px;text-align:left;width:100%}
+.tarjeta p{margin:0 0 10px;font-size:14px;color:var(--suave)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(120px);background:var(--texto);color:#fff;
+  padding:12px 18px;border-radius:12px;font-size:14px;transition:transform .25s;z-index:9;max-width:90%;text-align:center}
+.toast.ver{transform:translateX(-50%) translateY(0)}
+.nueva-res{width:100%;text-align:left}
+
+/* Ventana compacta (escritorio) */
+@media (max-width:420px){.mic{width:170px;height:170px}.mic img{width:104px;height:104px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <button class="marca" id="irInicio" aria-label="Inicio"><img src="isotipo.png" alt="">Tareas MW</button>
+    <div>
+      <button class="icono-btn oculto" id="btnAjustes" aria-label="Ajustes">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Cargando -->
+    <section id="vCargando" class="centro"><img src="isotipo.png" alt=""><p class="ayuda">Cargando…</p></section>
+
+    <!-- Login -->
+    <section id="vLogin" class="centro oculto">
+      <img src="isotipo.png" alt="">
+      <h1>Tareas MW</h1>
+      <p class="ayuda">Dicta tus pendientes y la IA los organiza por ti.</p>
+      <button class="btn btn-primario" id="btnLogin">Entrar con Google</button>
+    </section>
+
+    <!-- Clave de Gemini -->
+    <section id="vClave" class="centro oculto">
+      <img src="isotipo.png" alt="">
+      <h1>Un último paso</h1>
+      <div class="tarjeta">
+        <p>Pega tu clave gratuita de Gemini. Solo se pide una vez y queda guardada en tu cuenta privada; funciona en la compu y en el celular.</p>
+        <input class="campo" id="inClave" type="password" placeholder="Pega aquí tu clave" autocomplete="off">
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn btn-primario" id="btnGuardarClave" style="flex:1">Guardar</button>
+          <button class="btn btn-linea oculto" id="btnCancelarClave">Cancelar</button>
+        </div>
+      </div>
+      <button class="btn btn-linea oculto" id="btnSalir">Cerrar sesión</button>
+    </section>
+
+    <!-- Inicio: micrófono -->
+    <section id="vInicio" class="inicio oculto">
+      <p class="saludo" id="saludo">Hola</p>
+      <p class="ayuda" id="ayudaMic">Toca el lobo y dime todo lo que sepas del pendiente.</p>
+      <button class="mic" id="mic" aria-label="Dictar tarea">
+        <img src="isotipo.png" alt="">
+        <span class="badge"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+      </button>
+      <div class="estado" id="estado"></div>
+      <textarea class="dictado" id="dictado" placeholder="También puedes escribir aquí (o usar el micrófono del teclado)"></textarea>
+      <div class="fila-btns">
+        <button class="btn btn-linea" id="btnLimpiar">Borrar</button>
+        <button class="btn btn-primario" id="btnCrear" disabled>Crear tarea</button>
+      </div>
+      <div class="nueva-res" id="nuevaRes"></div>
+      <div class="nav-grande">
+        <button id="irPend"><b id="nPend">0</b><span>📋 Me faltan</span></button>
+        <button id="irHechas"><b id="nHechas">0</b><span>✅ Hechas</span></button>
+      </div>
+    </section>
+
+    <!-- Listas -->
+    <section id="vLista" class="oculto">
+      <div class="barra">
+        <h2 id="tituloLista">Mis tareas</h2>
+        <button class="btn btn-suave" id="btnNueva" style="padding:8px 14px">🎙️ Nueva</button>
+      </div>
+      <div class="pestanas">
+        <button data-tab="pend" class="activa">Me faltan</button>
+        <button data-tab="hechas">Hechas</button>
+      </div>
+      <div id="hazAhora"></div>
+      <div id="contLista"></div>
+    </section>
+
+    <!-- Detalle -->
+    <section id="vDetalle" class="detalle oculto">
+      <div class="barra">
+        <button class="icono-btn" id="btnVolver" aria-label="Volver"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <h2>Tarea</h2>
+      </div>
+      <label>Título</label>
+      <input class="campo" id="dTitulo">
+      <label>Descripción</label>
+      <textarea class="campo" id="dDesc"></textarea>
+      <label>Prioridad</label>
+      <div class="prioridades" id="dPrio">
+        <button data-p="alta">Alta</button><button data-p="media">Media</button><button data-p="baja">Baja</button>
+      </div>
+      <label>Fecha límite</label>
+      <input class="campo" id="dFecha" type="datetime-local">
+      <label>Pasos</label>
+      <div id="dPasos"></div>
+      <button class="btn btn-suave" id="btnAddPaso" style="margin-top:6px;padding:8px 14px">+ Agregar paso</button>
+      <label>Lo que dictaste</label>
+      <div class="original" id="dOriginal"></div>
+      <div class="pie-detalle">
+        <button class="btn btn-linea borrar" id="btnBorrar">Eliminar</button>
+        <button class="btn btn-primario" id="btnHecha">Marcar hecha</button>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+// ================== CONFIGURACIÓN ==================
+const firebaseConfig = {
+  apiKey: "AIzaSyB5YX4UVYr-vVUXOXCV77oVyk6l2DK1ifA",
+  authDomain: "tareas-mw.firebaseapp.com",
+  projectId: "tareas-mw",
+  storageBucket: "tareas-mw.firebasestorage.app",
+  messagingSenderId: "52925706316",
+  appId: "1:52925706316:web:3fdfebf38d2b7637a404e9"
+};
+const MODELOS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite"];
+// ====================================================
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, addDoc, setDoc,
+  updateDoc, deleteDoc, onSnapshot, getDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+
+const $ = (id) => document.getElementById(id);
+const vistas = ["vCargando", "vLogin", "vClave", "vInicio", "vLista", "vDetalle"];
+let usuario = null, claveGemini = null, tareas = [], tab = "pend", abierta = null, quitarEscucha = null;
+
+function mostrar(v) {
+  vistas.forEach((x) => $(x).classList.toggle("oculto", x !== v));
+  $("btnAjustes").classList.toggle("oculto", !["vInicio", "vLista"].includes(v));
+  window.scrollTo(0, 0);
+}
+function toast(msg, ms = 2600) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("ver");
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("ver"), ms);
+}
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+// ---------- Sesión ----------
+$("btnLogin").onclick = async () => {
+  const prov = new GoogleAuthProvider();
+  prov.setCustomParameters({ login_hint: "mwjoyerias@gmail.com", prompt: "select_account" });
+  try { await signInWithPopup(auth, prov); }
+  catch (e) {
+    if (["auth/popup-blocked", "auth/operation-not-supported-in-this-environment"].includes(e.code)) signInWithRedirect(auth, prov);
+    else if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") toast("No se pudo entrar: " + e.code);
+  }
+};
+$("btnSalir").onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, async (u) => {
+  usuario = u;
+  if (quitarEscucha) { quitarEscucha(); quitarEscucha = null; }
+  if (!u) { mostrar("vLogin"); return; }
+  const nombre = (u.displayName || "").split(" ")[0];
+  const h = new Date().getHours();
+  $("saludo").textContent = (h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches") + (nombre ? ", " + nombre : "");
+  try {
+    const perfil = await getDoc(doc(db, "users", u.uid));
+    claveGemini = perfil.exists() ? perfil.data().geminiKey : null;
+  } catch { claveGemini = null; }
+  quitarEscucha = onSnapshot(collection(db, "users", u.uid, "tareas"), (snap) => {
+    tareas = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    pintarTodo();
+  }, (err) => toast("Error al leer tareas: " + err.code));
+  if (!claveGemini) { pedirClave(false); return; }
+  route();
+});
+
+function pedirClave(cancelable) {
+  $("inClave").value = "";
+  $("btnCancelarClave").classList.toggle("oculto", !cancelable);
+  $("btnSalir").classList.toggle("oculto", !cancelable);
+  mostrar("vClave");
+}
+$("btnGuardarClave").onclick = async () => {
+  const k = $("inClave").value.trim().replace(/^"|"$/g, "");
+  if (k.length < 20) { toast("Esa clave se ve incompleta"); return; }
+  await setDoc(doc(db, "users", usuario.uid), { geminiKey: k }, { merge: true });
+  claveGemini = k; toast("Clave guardada"); location.hash = ""; route();
+};
+$("btnCancelarClave").onclick = () => route();
+$("btnAjustes").onclick = () => pedirClave(true);
+
+// ---------- Navegación ----------
+function route() {
+  if (!usuario) return;
+  if (!claveGemini) return pedirClave(false);
+  const h = location.hash.slice(1);
+  if (h === "pendientes" || h === "hechas") { tab = h === "hechas" ? "hechas" : "pend"; pintarLista(); mostrar("vLista"); }
+  else if (h.startsWith("t/")) { abrirDetalle(h.slice(2)); }
+  else { mostrar("vInicio"); }
+}
+window.addEventListener("hashchange", route);
+$("irInicio").onclick = () => { location.hash = ""; };
+$("irPend").onclick = () => { location.hash = "pendientes"; };
+$("irHechas").onclick = () => { location.hash = "hechas"; };
+$("btnNueva").onclick = () => { location.hash = ""; };
+$("btnVolver").onclick = () => { history.length > 1 ? history.back() : (location.hash = "pendientes"); };
+document.querySelectorAll(".pestanas button").forEach((b) => b.onclick = () => {
+  location.hash = b.dataset.tab === "hechas" ? "hechas" : "pendientes";
+});
+
+// ---------- Orden y fechas ----------
+const PESO = { alta: 3, media: 2, baja: 1 };
+const hoyStr = () => fechaLocal(new Date()).slice(0, 10);
+function fechaLocal(d) { const z = (n) => String(n).padStart(2, "0"); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`; }
+function estadoFecha(f) {
+  if (!f) return null;
+  const ahora = new Date(), d = new Date(f.length === 10 ? f + "T23:59" : f);
+  const dia = f.slice(0, 10), hoy = hoyStr();
+  const man = fechaLocal(new Date(Date.now() + 864e5)).slice(0, 10);
+  if (d < ahora) return "vencida";
+  if (dia === hoy) return "hoy";
+  if (dia === man) return "manana";
+  return "despues";
+}
+function textoFecha(f) {
+  if (!f) return "";
+  const d = new Date(f.length === 10 ? f + "T00:00" : f), e = estadoFecha(f);
+  const hora = f.length > 10 ? d.toLocaleTimeString("es-MX", { hour: "numeric", minute: "2-digit" }) : "";
+  let dia = e === "hoy" ? "Hoy" : e === "manana" ? "Mañana" : d.toLocaleDateString("es-MX", { weekday: "short", day: "numeric", month: "short" });
+  if (e === "vencida") dia = "Venció " + (f.slice(0, 10) === hoyStr() ? "hoy" : d.toLocaleDateString("es-MX", { day: "numeric", month: "short" }));
+  return dia + (hora ? " · " + hora : "");
+}
+function puntaje(t) {
+  const e = estadoFecha(t.fecha);
+  const urg = { vencida: 0, hoy: 1, manana: 2, despues: 3 }[e] ?? 4;
+  return [urg <= 1 ? 0 : 1, -(PESO[t.prioridad] || 2), urg, t.fecha || "9999"];
+}
+function comparar(a, b) {
+  const x = puntaje(a), y = puntaje(b);
+  for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] < y[i] ? -1 : 1;
+  return 0;
+}
+
+// ---------- Pintar ----------
+function pintarTodo() {
+  const pend = tareas.filter((t) => !t.hecha), hechas = tareas.filter((t) => t.hecha);
+  $("nPend").textContent = pend.length; $("nHechas").textContent = hechas.length;
+  if (!$("vLista").classList.contains("oculto")) pintarLista();
+  if (!$("vDetalle").classList.contains("oculto") && abierta) {
+    const t = tareas.find((x) => x.id === abierta);
+    if (!t) { location.hash = "pendientes"; }
+  }
+}
+const ICONO_OK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg>';
+function filaTarea(t) {
+  const e = estadoFecha(t.fecha), pasos = t.pasos || [], ok = pasos.filter((p) => p.hecho).length;
+  return `<li class="tarea ${esc(t.prioridad || "media")} ${t.hecha ? "hecha" : ""}">
+    <button class="check" data-check="${t.id}" aria-label="Marcar">${ICONO_OK}</button>
+    <button class="cuerpo" data-abrir="${t.id}">
+      <div class="titulo">${esc(t.titulo)}</div>
+      <div class="info">
+        ${t.fecha ? `<span class="chip ${e === "vencida" && !t.hecha ? "vencida" : ""}">${esc(textoFecha(t.fecha))}</span>` : ""}
+        ${pasos.length ? `<span>☑ ${ok}/${pasos.length} pasos</span>` : ""}
+        <span>${{ alta: "🔴 Alta", media: "🟡 Media", baja: "🟢 Baja" }[t.prioridad] || ""}</span>
+      </div>
+    </button></li>`;
+}
+function pintarLista() {
+  document.querySelectorAll(".pestanas button").forEach((b) => b.classList.toggle("activa", b.dataset.tab === tab));
+  const cont = $("contLista"), haz = $("hazAhora");
+  if (tab === "hechas") {
+    $("tituloLista").textContent = "Hechas";
+    haz.innerHTML = "";
+    const l = tareas.filter((t) => t.hecha).sort((a, b) => (b.hechaEn?.seconds || 0) - (a.hechaEn?.seconds || 0));
+    cont.innerHTML = l.length ? `<ul class="lista">${l.map(filaTarea).join("")}</ul>` : `<div class="vacio">Aún no has terminado tareas.</div>`;
+    return;
+  }
+  $("tituloLista").textContent = "Me faltan";
+  const l = tareas.filter((t) => !t.hecha).sort(comparar);
+  if (!l.length) { haz.innerHTML = ""; cont.innerHTML = `<div class="vacio">🎉 No tienes pendientes.<br>Toca “Nueva” para dictar una tarea.</div>`; return; }
+  const p = l[0];
+  haz.innerHTML = `<div class="haz-ahora"><small>Haz ahora</small>
+    <div class="t">${esc(p.titulo)}</div>
+    <div class="meta">${[textoFecha(p.fecha), { alta: "Prioridad alta", media: "Prioridad media", baja: "Prioridad baja" }[p.prioridad]].filter(Boolean).map(esc).join(" · ")}</div>
+    <div class="acciones"><button data-check="${p.id}">✓ Ya la hice</button><button data-abrir="${p.id}">Ver detalles</button></div></div>`;
+  const resto = l.slice(1);
+  const grupos = [["Urgente", resto.filter((t) => ["vencida", "hoy"].includes(estadoFecha(t.fecha)))],
+    ["Alta prioridad", resto.filter((t) => !["vencida", "hoy"].includes(estadoFecha(t.fecha)) && t.prioridad === "alta")],
+    ["Después", resto.filter((t) => !["vencida", "hoy"].includes(estadoFecha(t.fecha)) && t.prioridad !== "alta")]];
+  cont.innerHTML = grupos.filter((g) => g[1].length).map((g) => `<div class="grupo">${g[0]}</div><ul class="lista">${g[1].map(filaTarea).join("")}</ul>`).join("");
+}
+document.addEventListener("click", (ev) => {
+  const c = ev.target.closest("[data-check]"); if (c) { alternarHecha(c.dataset.check); return; }
+  const a = ev.target.closest("[data-abrir]"); if (a) { location.hash = "t/" + a.dataset.abrir; }
+});
+async function alternarHecha(id) {
+  const t = tareas.find((x) => x.id === id); if (!t) return;
+  const nueva = !t.hecha;
+  await updateDoc(doc(db, "users", usuario.uid, "tareas", id), { hecha: nueva, hechaEn: nueva ? serverTimestamp() : null });
+  if (nueva) toast("✓ ¡Bien! Tarea terminada");
+}
+
+// ---------- Dictado por voz ----------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, escuchando = false, baseTexto = "";
+if (!SR) $("ayudaMic").textContent = "Escribe el pendiente abajo o usa el micrófono de tu teclado.";
+$("mic").onclick = () => {
+  if (!SR) { $("dictado").focus(); return; }
+  escuchando ? rec.stop() : empezar();
+};
+function empezar() {
+  rec = new SR(); rec.lang = "es-MX"; rec.continuous = true; rec.interimResults = true;
+  baseTexto = $("dictado").value ? $("dictado").value.trim() + " " : "";
+  rec.onstart = () => { escuchando = true; $("mic").classList.add("escuchando"); $("estado").textContent = "Te escucho… toca otra vez para terminar"; };
+  rec.onresult = (e) => {
+    let fin = "", tmp = "";
+    for (let i = 0; i < e.results.length; i++) (e.results[i].isFinal ? (fin += e.results[i][0].transcript) : (tmp += e.results[i][0].transcript));
+    $("dictado").value = baseTexto + fin + tmp; actualizarBtn();
+  };
+  rec.onerror = (e) => {
+    if (e.error === "not-allowed") toast("Permite el micrófono para dictar");
+    else if (e.error !== "no-speech" && e.error !== "aborted") toast("Micrófono: " + e.error);
+  };
+  rec.onend = () => {
+    escuchando = false; $("mic").classList.remove("escuchando"); $("estado").textContent = "";
+    if ($("dictado").value.trim()) crearTarea();
+  };
+  rec.start();
+}
+function actualizarBtn() { $("btnCrear").disabled = !$("dictado").value.trim(); }
+$("dictado").oninput = actualizarBtn;
+$("btnLimpiar").onclick = () => { $("dictado").value = ""; $("nuevaRes").innerHTML = ""; actualizarBtn(); };
+$("btnCrear").onclick = () => crearTarea();
+
+// ---------- Gemini ----------
+async function preguntarGemini(texto) {
+  const ahora = new Date();
+  const prompt = `Eres un asistente que organiza tareas de trabajo. Hoy es ${ahora.toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} y son las ${ahora.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })} (fecha ISO de hoy: ${hoyStr()}).
+A partir de lo que la persona dictó, crea UNA tarea. Responde SOLO con JSON con estas claves:
+- "titulo": corto y claro, empieza con un verbo, máximo 60 caracteres.
+- "descripcion": 1 a 3 frases con el contexto útil que mencionó (personas, cantidades, detalles). Cadena vacía si no hay.
+- "pasos": lista de pasos concretos y en orden si los mencionó o son obvios (máximo 8). Lista vacía si es algo de un solo paso.
+- "fecha": fecha límite en formato "AAAA-MM-DDTHH:MM" si dio hora, "AAAA-MM-DD" si solo dio día, o null si no mencionó fecha. Interpreta "mañana", "el lunes", "en dos días", etc. respecto a hoy.
+- "prioridad": "alta" si es urgente, importante o vence hoy/mañana; "baja" si dijo que no corre prisa; "media" en otro caso.
+Corrige errores de dictado obvios. Escribe en español.
+Lo que dictó: """${texto}"""`;
+  let ultimoError = null;
+  for (const modelo of MODELOS) {
+    for (let intento = 0; intento < 2; intento++) {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": claveGemini },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.3 } })
+      });
+      if (r.ok) {
+        const j = await r.json();
+        const txt = j.candidates?.[0]?.content?.parts?.map((p) => p.text || "").join("") || "";
+        return JSON.parse(txt.replace(/^```json|```$/g, "").trim());
+      }
+      const err = await r.json().catch(() => ({}));
+      ultimoError = { status: r.status, msg: err.error?.message || r.statusText };
+      if (r.status === 400 || r.status === 401 || r.status === 403) throw ultimoError;
+      if (r.status === 404) break;                       // modelo no disponible: probar el siguiente
+      await new Promise((ok) => setTimeout(ok, 1500));    // 429 / 503: esperar y reintentar
+    }
+  }
+  throw ultimoError || { status: 0, msg: "Sin respuesta" };
+}
+
+async function crearTarea() {
+  const texto = $("dictado").value.trim(); if (!texto) return;
+  $("btnCrear").disabled = true; $("mic").classList.add("pensando"); $("estado").textContent = "Organizando tu tarea…";
+  try {
+    const r = await preguntarGemini(texto);
+    const pr = ["alta", "media", "baja"].includes(r.prioridad) ? r.prioridad : "media";
+    const tarea = {
+      titulo: String(r.titulo || texto.slice(0, 60)), descripcion: String(r.descripcion || ""),
+      pasos: (Array.isArray(r.pasos) ? r.pasos : []).filter(Boolean).slice(0, 12).map((p) => ({ texto: String(p), hecho: false })),
+      fecha: typeof r.fecha === "string" && /^\d{4}-\d{2}-\d{2}/.test(r.fecha) ? r.fecha.slice(0, 16) : null,
+      prioridad: pr, hecha: false, original: texto, creada: serverTimestamp()
+    };
+    const ref = await addDoc(collection(db, "users", usuario.uid, "tareas"), tarea);
+    $("dictado").value = ""; actualizarBtn();
+    $("nuevaRes").innerHTML = `<div class="grupo">Tarea creada</div><ul class="lista">${filaTarea({ id: ref.id, ...tarea })}</ul>`;
+    toast("✓ Tarea creada");
+  } catch (e) {
+    const s = e.status;
+    const msg = s === 400 || s === 401 || s === 403 ? "La clave de Gemini no funciona. Revísala en ⚙️."
+      : s === 429 ? "Llegaste al límite gratuito del momento. Espera un minuto."
+      : s === 503 ? "Gemini está saturado. Intenta en un momento; tu texto sigue ahí."
+      : "No se pudo crear: " + (e.msg || e.message || e);
+    toast(msg, 4500); actualizarBtn();
+  } finally { $("mic").classList.remove("pensando"); $("estado").textContent = ""; }
+}
+
+// ---------- Detalle ----------
+function abrirDetalle(id) {
+  const t = tareas.find((x) => x.id === id);
+  if (!t) { if (tareas.length) location.hash = "pendientes"; else setTimeout(() => route(), 400); return; }
+  abierta = id;
+  $("dTitulo").value = t.titulo || ""; $("dDesc").value = t.descripcion || "";
+  $("dFecha").value = t.fecha ? (t.fecha.length === 10 ? t.fecha + "T09:00" : t.fecha) : "";
+  document.querySelectorAll("#dPrio button").forEach((b) => b.classList.toggle("sel", b.dataset.p === (t.prioridad || "media")));
+  $("dOriginal").textContent = t.original || "—";
+  $("btnHecha").textContent = t.hecha ? "Regresar a pendientes" : "Marcar hecha";
+  pintarPasos(t.pasos || []);
+  mostrar("vDetalle");
+}
+function pintarPasos(pasos) {
+  $("dPasos").innerHTML = pasos.map((p, i) => `<div class="paso ${p.hecho ? "ok" : ""}">
+    <input type="checkbox" data-i="${i}" ${p.hecho ? "checked" : ""}><input type="text" data-i="${i}" value="${esc(p.texto)}">
+    <button data-quitar="${i}" aria-label="Quitar paso">✕</button></div>`).join("") || `<div class="ayuda" style="max-width:none">Sin pasos.</div>`;
+}
+const refAbierta = () => doc(db, "users", usuario.uid, "tareas", abierta);
+const pasosActuales = () => (tareas.find((x) => x.id === abierta)?.pasos || []).map((p) => ({ ...p }));
+$("dTitulo").onchange = () => updateDoc(refAbierta(), { titulo: $("dTitulo").value.trim() || "Sin título" });
+$("dDesc").onchange = () => updateDoc(refAbierta(), { descripcion: $("dDesc").value });
+$("dFecha").onchange = () => updateDoc(refAbierta(), { fecha: $("dFecha").value || null });
+document.querySelectorAll("#dPrio button").forEach((b) => b.onclick = () => {
+  document.querySelectorAll("#dPrio button").forEach((x) => x.classList.toggle("sel", x === b));
+  updateDoc(refAbierta(), { prioridad: b.dataset.p });
+});
+$("dPasos").addEventListener("change", (e) => {
+  const i = +e.target.dataset.i, p = pasosActuales(); if (!p[i]) return;
+  if (e.target.type === "checkbox") { p[i].hecho = e.target.checked; e.target.parentElement.classList.toggle("ok", e.target.checked); }
+  else p[i].texto = e.target.value.trim();
+  updateDoc(refAbierta(), { pasos: p.filter((x) => x.texto) });
+});
+$("dPasos").addEventListener("click", (e) => {
+  const q = e.target.closest("[data-quitar]"); if (!q) return;
+  const p = pasosActuales(); p.splice(+q.dataset.quitar, 1);
+  updateDoc(refAbierta(), { pasos: p }); pintarPasos(p);
+});
+$("btnAddPaso").onclick = () => {
+  const p = pasosActuales(); p.push({ texto: "Nuevo paso", hecho: false });
+  updateDoc(refAbierta(), { pasos: p }); pintarPasos(p);
+  const ins = $("dPasos").querySelectorAll("input[type=text]"); const u = ins[ins.length - 1]; u.focus(); u.select();
+};
+$("btnHecha").onclick = async () => { await alternarHecha(abierta); history.length > 1 ? history.back() : (location.hash = "pendientes"); };
+$("btnBorrar").onclick = async () => {
+  if (!confirm("¿Eliminar esta tarea? No se puede deshacer.")) return;
+  await deleteDoc(refAbierta());
+  location.hash = "pendientes";
+  toast("Tarea eliminada");
+};
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>
