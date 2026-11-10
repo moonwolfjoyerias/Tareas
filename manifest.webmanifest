@@ -1,11 +1,11 @@
 {
   "name": "Tareas MW",
   "short_name": "Tareas MW",
-  "description": "Dicta tus pendientes y la IA los organiza por prioridad.",
+  "description": "Tu lista de pendientes ordenada por prioridad. Escríbelas o díctalas al lobo.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#F8F4EF",
+  "background_color": "#FAF7F3",
   "theme_color": "#5E1A8A",
   "lang": "es-MX",
   "icons": [
@@ -13,7 +13,8 @@
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
   "shortcuts": [
-    { "name": "Nueva tarea", "url": "./", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
-    { "name": "Me faltan", "url": "./#pendientes", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+    { "name": "Haz ahora", "short_name": "Haz ahora", "url": "./?vista=ahora", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Dictar tarea", "short_name": "Dictar", "url": "./?voz=1", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Nueva tarea", "short_name": "Nueva", "url": "./?nueva=1", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
   ]
 }

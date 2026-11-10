@@ -327,7 +327,11 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const PRIOS = ["alta", "media", "baja"];
 const NOMBRE_P = { alta: "Alta", media: "Media", baja: "Baja" };
 let usuario = null, clave = null, tareas = [], abierta = null, quitar = null;
-let vista = (() => { try { return localStorage.getItem("mw_vista") || "prioridad"; } catch { return "prioridad"; } })();
+const _qs = new URLSearchParams(location.search);
+let vista = (() => {
+  const v = _qs.get("vista"); if (["ahora", "prioridad", "planeado", "completadas"].includes(v)) return v;
+  try { return localStorage.getItem("mw_vista") || "prioridad"; } catch { return "prioridad"; }
+})();
 let completadasPlegadas = true;
 const sortables = [];
 
@@ -352,6 +356,8 @@ onAuthStateChanged(auth, async (u) => {
   if (!u) { $("app").classList.add("oculto"); $("pLogin").classList.remove("oculto"); return; }
   $("pLogin").classList.add("oculto"); $("app").classList.remove("oculto");
   $("correo").textContent = u.email || "";
+  if (_qs.get("nueva") === "1") setTimeout(() => $("inNueva").focus(), 300);
+  if (_qs.get("voz") === "1") setTimeout(() => $("mic").click(), 600);
   getDoc(doc(db, "users", u.uid)).then((d) => { clave = d.exists() ? d.data().geminiKey || null : null; }).catch(() => {});
   quitar = onSnapshot(collection(db, "users", u.uid, "tareas"), (s) => {
     tareas = s.docs.map((d) => ({ id: d.id, ...d.data() }));
